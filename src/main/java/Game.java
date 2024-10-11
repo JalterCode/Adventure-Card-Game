@@ -134,6 +134,12 @@ public class Game {
 
         eventDeck.discard(card);
 
+        if(card instanceof EventCard){
+            ((EventCard) card).handleEvent((EventCard) card, player, this);
+        }
+
+
+
         return card;
     }
 
@@ -170,5 +176,3 @@ public class Game {
         return finished;
     }
 }
-
-
