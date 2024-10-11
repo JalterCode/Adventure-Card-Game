@@ -142,7 +142,7 @@ class GameTest {
         assertEquals(1,game.getWinners().size()); //should only be one winner
         assertTrue(game.getWinners().contains(game.P1));
     }
-    
+
 
 
 }

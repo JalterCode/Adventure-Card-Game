@@ -18,8 +18,8 @@ public class Game {
     private Set<Player> winners = new HashSet<>();
 
     public int currentPlayerNum = 0;
+    boolean finished = false;
 
-    private boolean finished = false;
 
     public Game(){
         adventureDeckSetup();
@@ -27,21 +27,20 @@ public class Game {
     }
 
     public void play() {
-        boolean finished = false;
-        int i = 0;
         winners.clear();
-        while(i < 5){
+        while(!finished){
             playTurn();
             for(Player player: players){
                 if(player.getShields()>= 7){
                     winners.add(player);
-                    System.out.println("Winner: " + player.getID());
                 }
             }
             if(!winners.isEmpty()){
-                break;
+                System.out.println("Winners: " + winners);
+                System.out.println("Now ending game...");
+                finished = true;
             }
-            i++;
+
 
 
 
@@ -50,8 +49,6 @@ public class Game {
     }
 
     public void playTurn(){
-        System.out.println("Current Player's Turn: " + players[currentPlayerNum].getID());
-
 
         currentPlayerNum = (currentPlayerNum + 1) % players.length;
 
