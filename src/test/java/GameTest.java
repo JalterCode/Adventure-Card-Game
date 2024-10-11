@@ -143,6 +143,51 @@ class GameTest {
         assertTrue(game.getWinners().contains(game.P1));
     }
 
+    @Test
+    @DisplayName("Ensure game correctly assigns an event card")
+    void RESP05_test_01(){
+        Game game = new Game();
+
+        Deck testDeck = new Deck();
+        Player P1 = new Player("P1");
+
+        EventCard Plague = new EventCard("event","Plague",1);
+        QuestCard Q2 = new QuestCard("quest","Q2",2,3);
+        QuestCard Q5 = new QuestCard("quest","Q5",5,2);
+
+        testDeck.addCard(Plague);
+        testDeck.addCard(Q2);
+        testDeck.addCard(Q5);
+
+        game.setEventDeck(testDeck);
+
+        Card expectedCard = testDeck.getCards().get(0);
+        Card actualCard = game.drawEventCard(P1);
+
+        assertEquals(expectedCard,actualCard);
+
+    }
+
+    @Test
+    @DisplayName("Ensure game correctly updates the event deck and its discard pile when an event card is drawn")
+    void RESP05_test_02(){
+
+        Game game = new Game();
+
+        int initialSize = game.getEventDeck().deckSize();
+
+        Card expectedCard = game.getEventDeck().getCards().get(0);
+
+        game.playTurn();
+
+        int updatedSize = game.getEventDeck().deckSize();
+
+        assertEquals(initialSize - 1, updatedSize);
+
+        assertTrue(game.getEventDeck().getDiscard().contains(expectedCard));
+
+    }
+
 
 
 }

@@ -35,4 +35,7 @@ public class Deck {
     }
 
 
+    public ArrayList<Card> getDiscard(){
+        return discard;
+    }
 }

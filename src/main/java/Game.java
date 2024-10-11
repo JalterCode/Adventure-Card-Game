@@ -126,6 +126,11 @@ public class Game {
         }
     }
 
+    public Card drawEventCard(Player player){
+
+        return null;
+    }
+
     public void distributeAdventureCards(){
         for (Player player: players){
             for(int i = 0; i<12;i++){
@@ -153,6 +158,9 @@ public class Game {
 
     public boolean isGameFinished(){
         return finished;
+    }
+
+    public void setEventDeck(Deck testDeck) {
     }
 }
 
