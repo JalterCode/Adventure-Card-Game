@@ -19,6 +19,8 @@ public class Game {
 
     public int currentPlayerNum = 0;
 
+    private boolean finished = false;
+
     public Game(){
         adventureDeckSetup();
         eventDeckSetup();
@@ -150,6 +152,10 @@ public class Game {
 
     public void displayHand(Player player){
 
+    }
+
+    public boolean isGameFinished(){
+        return finished;
     }
 }
 

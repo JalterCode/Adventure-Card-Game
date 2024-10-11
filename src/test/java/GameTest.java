@@ -132,6 +132,18 @@ class GameTest {
         assertEquals(2,game.getWinners().size());
     }
 
+    @Test
+    @DisplayName("Ensure game correctly terminates when winner is assigned")
+    void RESP04_test_01(){
+        Game game = new Game();
+        game.P1.setShields(7);
+        game.play();
+        assertTrue(game.isGameFinished()); //terminate when winner
+        assertEquals(1,game.getWinners().size()); //should only be one winner
+        assertTrue(game.getWinners().contains(game.P1));
+    }
+    
+
 
 }
 
