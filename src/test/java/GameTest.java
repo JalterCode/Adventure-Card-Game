@@ -1,6 +1,10 @@
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -131,7 +135,6 @@ class GameTest {
 
         assertEquals(2,game.getWinners().size());
     }
-
     @Test
     @DisplayName("Ensure game correctly terminates when winner is assigned")
     void RESP04_test_01(){
@@ -269,11 +272,61 @@ class GameTest {
         assertEquals(2,game.P2.getHand().size());
         assertEquals(2,game.P3.getHand().size());
         assertEquals(2,game.P4.getHand().size());
+    }
+    @Test
+    @DisplayName("Test if game properly computes the amount of cards to discard from the player's hand")
+    void RESP08_test_01() {
 
+        Game game = new Game();
+        game.distributeAdventureCards();
+
+
+        game.drawAdventureCard(game.P1);
+        game.drawAdventureCard(game.P1);
+
+        String simulatedInput = "1\n1\n";
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in); //
+
+        int cardsToDiscard = game.trimHand(game.P1);
+
+        assertEquals(2, cardsToDiscard);
 
     }
+    @Test
+    @DisplayName("Test if game properly displays the players hand")
+    void RESP08_test_02() {
+        Game game = new Game();
+        Deck deck = new Deck();
 
+        game.setAdventureDeck(deck);
 
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 7, "foe");
+        deck.addCard(F5);
+        AdventureCard F10 = new AdventureCard("adventure", "F10", 10, 6, "foe");
+        deck.addCard(F10);
+
+        for(int i = 0; i < 13; i++){
+            game.drawAdventureCard(game.P1);
+        }
+
+        String simulatedInput = "1";
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        game.trimHand(game.P1);
+
+        String output = outputStream.toString(); // Get the output as a string
+
+        String expectedOutput = "You must discard 1 cards.";
+        assertTrue(output.contains(expectedOutput), "Output does not contain expected message.");
+
+        String expectedHandOutput = "[F5, F5, F5, F5, F5, F5, F5, F10, F10, F10, F10, F10, F10]";
+        assertTrue(output.contains(expectedHandOutput), "Player's hand output does not match expected.");
+    }
 
 }
 

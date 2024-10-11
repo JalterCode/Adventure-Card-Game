@@ -152,6 +152,8 @@ public class Game {
         }
     }
 
+
+
     public Deck getAdventureDeck(){
         return adventureDeck;
     }
@@ -174,5 +176,13 @@ public class Game {
 
     public boolean isGameFinished(){
         return finished;
+    }
+
+    public int trimHand(Player player) {
+        return 0;
+    }
+
+    public void setAdventureDeck(Deck deck) {
+        this.adventureDeck = deck;
     }
 }
