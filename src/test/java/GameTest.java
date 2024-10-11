@@ -328,6 +328,108 @@ class GameTest {
         assertTrue(output.contains(expectedHandOutput), "Player's hand output does not match expected.");
     }
 
+    @Test
+    @DisplayName("Test if game properly removes the selected card")
+    void RESP09_test_01() {
+
+        Game game = new Game();
+        Deck deck = new Deck();
+
+        game.setAdventureDeck(deck);
+
+        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        AdventureCard F25 = new AdventureCard("adventure","F25",25,2, "foe");
+        AdventureCard F70 = new AdventureCard("adventure","F70",70,2, "foe");
+        deck.addCard(F15);
+        deck.addCard(F20);
+        deck.addCard(F25);
+        deck.addCard(F70);
+
+        for(int i = 0; i < 13; i++){
+            game.drawAdventureCard(game.P1);
+        }
+
+        String simulatedInput = "13";
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        game.trimHand(game.P1);
+
+        String output = outputStream.toString(); // Get the output as a string
+
+        String expectedHandOutput = "F70 was successfully discarded";
+        assertTrue(output.contains(expectedHandOutput), "Incorrect card was discarded.");
+    }
+
+    @Test
+    @DisplayName("Test if user input is correctly handled if beyond range")
+    void RESP09_test_02() {
+        Game game = new Game();
+        game.distributeAdventureCards();
+        game.drawAdventureCard(game.P1);
+
+        String simulatedInput = "100\n1"; //first input invalid, then enter valid after to ensure that it still works
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+
+        game.trimHand(game.P1);
+
+        String output = outputStream.toString(); // Get the output as a string
+
+        String expectedHandOutput = "Invalid input. Please enter a valid position.";
+        assertTrue(output.contains(expectedHandOutput), "incorrectly checked");
+    }
+
+    @Test
+    @DisplayName("Test if user input is correctly handled if NOT a number")
+    void RESP09_test_03() {
+
+        Game game = new Game();
+        game.distributeAdventureCards();
+        game.drawAdventureCard(game.P1);
+
+        String simulatedInput = "w\n1"; //first input invalid, then enter valid after to ensure that it still works
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+
+        game.trimHand(game.P1);
+
+        String output = outputStream.toString(); // Get the output as a string
+
+        String expectedHandOutput = "Invalid input. Please enter a number.";
+        assertTrue(output.contains(expectedHandOutput), "incorrectly checked");
+
+    }
+
+    @Test
+    @DisplayName("Test the card that the player discards is actually added to the decks discard pile")
+    void RESP09_test_04() {
+        Game game = new Game();
+        game.distributeAdventureCards();
+        game.drawAdventureCard(game.P1);
+
+        String simulatedInput = "1";
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in);
+
+        game.trimHand(game.P1);
+
+        assertEquals(1,game.getAdventureDeck().discardSize());
+
+    }
+
 }
 
 
