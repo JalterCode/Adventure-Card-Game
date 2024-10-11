@@ -4,6 +4,8 @@ public class Game {
 
     private Deck eventDeck = new Deck();
 
+    Player[] players;
+
     public Game(){
         adventureDeckSetup();
         eventDeckSetup();
