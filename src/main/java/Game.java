@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Game {
 
@@ -14,29 +11,53 @@ public class Game {
     Player P3 = new Player("P3");
     Player P4 = new Player("P4");
 
+
+
     Player[] players = {P1,P2,P3,P4};
 
     private Set<Player> winners = new HashSet<>();
 
-
     public int currentPlayerNum = 0;
-
 
     public Game(){
         adventureDeckSetup();
         eventDeckSetup();
     }
 
-    public void play(){
+    public void play() {
+        boolean finished = false;
+        int i = 0;
+        winners.clear();
+        while(i < 5){
+            playTurn();
+            for(Player player: players){
+                if(player.getShields()>= 7){
+                    winners.add(player);
+                    System.out.println("Winner: " + player.getID());
+                }
+            }
+            if(!winners.isEmpty()){
+                break;
+            }
+            i++;
+
+
+
+
+        }
+    }
+
+    public void playTurn(){
+        System.out.println("Current Player's Turn: " + players[currentPlayerNum].getID());
+
+
+        currentPlayerNum = (currentPlayerNum + 1) % players.length;
 
     }
 
 
-    public void playTurn() {
 
-    }
-
-        public void adventureDeckSetup(){
+    public void adventureDeckSetup(){
         //Foe cards
         AdventureCard F5 = new AdventureCard("adventure","F5",5,8, "foe");
         AdventureCard F10 = new AdventureCard("adventure","F10",10,7, "foe");
