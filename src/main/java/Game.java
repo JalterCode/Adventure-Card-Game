@@ -41,14 +41,11 @@ public class Game {
                 finished = true;
             }
 
-
-
-
-
         }
     }
 
     public void playTurn(){
+        drawEventCard(players[currentPlayerNum]);
 
         currentPlayerNum = (currentPlayerNum + 1) % players.length;
 
@@ -127,8 +124,17 @@ public class Game {
     }
 
     public Card drawEventCard(Player player){
+        if(eventDeck.deckSize() == 0){
+            eventDeck.reShuffle();
+        }
 
-        return null;
+        Card card = eventDeck.getCards().remove(0);
+
+        System.out.println(player.getID() + " Draws the card: " + card);
+
+        eventDeck.discard(card);
+
+        return card;
     }
 
     public void distributeAdventureCards(){
@@ -156,11 +162,12 @@ public class Game {
 
     }
 
-    public boolean isGameFinished(){
-        return finished;
+    public void setEventDeck(Deck eventDeck){
+        this.eventDeck = eventDeck;
     }
 
-    public void setEventDeck(Deck testDeck) {
+    public boolean isGameFinished(){
+        return finished;
     }
 }
 

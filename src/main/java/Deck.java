@@ -24,10 +24,24 @@ public class Deck {
     public int discardSize(){
         return discard.size();
     }
+
+    public ArrayList<Card> getDiscard(){
+        return discard;
+    }
+
+    public void discard(Card card){
+        discard.add(card);
+    }
     public void addCard(Card card){
         for(int i=0;i<card.getAmount();i++){
             cards.add(card);
         }
+    }
+
+    public void reShuffle(){
+        cards = (ArrayList<Card>) discard.clone();
+        discard.clear();
+        shuffle();
     }
 
     public void shuffle(){
@@ -35,7 +49,4 @@ public class Deck {
     }
 
 
-    public ArrayList<Card> getDiscard(){
-        return discard;
-    }
 }
