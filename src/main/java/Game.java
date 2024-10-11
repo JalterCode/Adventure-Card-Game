@@ -158,19 +158,38 @@ public class Game {
 
         System.out.println("You must discard " + n + " cards.");
 
-        Scanner scanner = new Scanner(System.in); // Create a single instance
+        Scanner scanner = new Scanner(System.in);
         for (int i = 0; i < n; i++) {
             System.out.println(player.getHand());
-            System.out.println("Enter the position of the card you want to discard (1 to " + player.getHand().size() + "):");
+            int pos = -1;
 
-            if(scanner.hasNextInt()) {
-                int pos = scanner.nextInt() - 1;
-                adventureDeck.discard(player.discardHand(pos));
-            }
+            do {
+                System.out.println("Enter the position of the card you want to discard (1 to " + player.getHand().size() + "):");
+
+                if (scanner.hasNextInt()) {
+                    pos = scanner.nextInt() - 1;
+
+                    // Validate if it's within range
+                    if (pos < 0 || pos >= player.getHand().size()) {
+                        System.out.println("Invalid input. Please enter a valid position.");
+                        pos = -1;
+                    }
+                } else {
+                    System.out.println("Invalid input. Please enter a number.");
+                    scanner.next();
+                }
+            } while (pos == -1);
+
+            Card card = player.discardHand(pos);
+            adventureDeck.discard(card);
+            System.out.println(card + " was successfully discarded");
+            System.out.println("Updated Hand: "+ player.getHand());
+
         }
-        scanner.close();
+
         return n;
     }
+
 
 
     public Deck getAdventureDeck(){
@@ -201,3 +220,5 @@ public class Game {
         return finished;
     }
 }
+
+
