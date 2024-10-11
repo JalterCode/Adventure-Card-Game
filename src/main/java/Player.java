@@ -15,6 +15,14 @@ public class Player {
         hand.add(card);
     }
 
+    //public void useCard(AdventureCard card){
+    //    hand.remove(card);
+    //}
+
+    public AdventureCard discardHand(int position){
+        return hand.remove(position);
+    }
+
     public ArrayList<AdventureCard> getHand(){
         return hand;
     }
@@ -29,6 +37,11 @@ public class Player {
 
     public void setShields(int amount){
         this.shields = amount;
+    }
+
+    @Override
+    public String toString() {
+        return ID;
     }
 
 

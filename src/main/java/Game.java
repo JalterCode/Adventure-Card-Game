@@ -138,8 +138,9 @@ public class Game {
             ((EventCard) card).handleEvent((EventCard) card, player, this);
         }
 
-
-
+        if(player.getHand().size() > 12){
+            trimHand(player);
+        }
         return card;
     }
 
@@ -152,10 +153,32 @@ public class Game {
         }
     }
 
+    public int trimHand(Player player) {
+        int n = player.getHand().size() - 12;
+
+        System.out.println("You must discard " + n + " cards.");
+
+        Scanner scanner = new Scanner(System.in); // Create a single instance
+        for (int i = 0; i < n; i++) {
+            System.out.println(player.getHand());
+            System.out.println("Enter the position of the card you want to discard (1 to " + player.getHand().size() + "):");
+
+            if(scanner.hasNextInt()) {
+                int pos = scanner.nextInt() - 1;
+                adventureDeck.discard(player.discardHand(pos));
+            }
+        }
+        scanner.close();
+        return n;
+    }
 
 
     public Deck getAdventureDeck(){
         return adventureDeck;
+    }
+
+    public void setAdventureDeck(Deck deck){
+        this.adventureDeck = deck;
     }
 
     public Deck getEventDeck(){
@@ -176,13 +199,5 @@ public class Game {
 
     public boolean isGameFinished(){
         return finished;
-    }
-
-    public int trimHand(Player player) {
-        return 0;
-    }
-
-    public void setAdventureDeck(Deck deck) {
-        this.adventureDeck = deck;
     }
 }
