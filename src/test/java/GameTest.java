@@ -228,6 +228,51 @@ class GameTest {
 
     }
 
+    @Test
+    @DisplayName("Test if Queen's Favor correctly adds 2 cards to players hand")
+    void RESP07_test_01(){
+        Game game = new Game();
+        Deck testDeck = new Deck();
+
+        game.setEventDeck(testDeck);
+
+        assertEquals(0, game.P1.getHand().size());
+
+        EventCard Queen = new EventCard("event","Queen's Favor",1);
+        testDeck.addCard(Queen);
+
+        game.playTurn();
+
+        assertEquals(2,game.P1.getHand().size());
+    }
+
+    @Test
+    @DisplayName("Test if Prosperity adds two cards to each players hand")
+    void RESP07_test_02(){
+        Game game = new Game();
+        Deck testDeck = new Deck();
+
+        game.setEventDeck(testDeck);
+
+
+        assertEquals(0, game.P1.getHand().size());
+        assertEquals(0, game.P2.getHand().size());
+        assertEquals(0, game.P3.getHand().size());
+        assertEquals(0, game.P4.getHand().size());
+
+
+        EventCard Queen = new EventCard("event","Prosperity",1);
+        testDeck.addCard(Queen);
+        game.playTurn();
+
+        assertEquals(2,game.P1.getHand().size());
+        assertEquals(2,game.P2.getHand().size());
+        assertEquals(2,game.P3.getHand().size());
+        assertEquals(2,game.P4.getHand().size());
+
+
+    }
+
 
 
 }

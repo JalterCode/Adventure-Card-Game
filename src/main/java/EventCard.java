@@ -14,15 +14,6 @@ public class EventCard extends Card {
                 player.setShields(currentShields - 2);
             }
         }
-        if(card.getName().equals("Queen's Favor")){
-            game.drawAdventureCard(player);
-            game.drawAdventureCard(player);
-        }
-        if(card.getName().equals("Prosperity")){
-            for(Player player1: game.players){
-                game.drawAdventureCard(player1);
-                game.drawAdventureCard(player1);
-            }
-        }
+
     }
 }
