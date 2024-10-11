@@ -4,16 +4,25 @@ public class EventCard extends Card {
         super(cardType, name, amount);
     }
 
-    public void handleEvent(EventCard card, Player player, Game game){
+    public void handleEvent(EventCard card, Player player, Game game) {
         int currentShields = player.getShields();
-        if(card.getName().equals("Plague")){
+        if (card.getName().equals("Plague")) {
 
-            if(currentShields <= 2){
+            if (currentShields <= 2) {
                 player.setShields(0);
-            } else{
+            } else {
                 player.setShields(currentShields - 2);
             }
         }
-
+        if (card.getName().equals("Queen's Favor")) {
+            game.drawAdventureCard(player);
+            game.drawAdventureCard(player);
+        }
+        if (card.getName().equals("Prosperity")) {
+            for (Player player1 : game.players) {
+                game.drawAdventureCard(player1);
+                game.drawAdventureCard(player1);
+            }
+        }
     }
 }
