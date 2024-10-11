@@ -24,7 +24,9 @@ public class Deck {
         return discard.size();
     }
     public void addCard(Card card){
-
+        for(int i=0;i<card.getAmount();i++){
+            cards.add(card);
+        }
     }
 
 
