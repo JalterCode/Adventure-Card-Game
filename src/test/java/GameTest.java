@@ -101,6 +101,37 @@ class GameTest {
         assertNotEquals(originalDeck,shuffledDeck);
     }
 
+    @Test
+    @DisplayName("Ensure each player takes a turn, with it looping back to P1")
+    void RESP03_test_01(){
+        int numTurns = 5;
+        List<String> actualOrder = new ArrayList<>();
+        Game game = new Game();
+        String[] expectedOrder = {"P1","P2","P3","P4","P1"};
+        for(int i =0; i<numTurns; i++){
+            Player currentPlayer = game.players[game.currentPlayerNum];
+            actualOrder.add(currentPlayer.getID());
+            game.playTurn();
+        }
+
+        assertEquals(Arrays.asList(expectedOrder), actualOrder);
+
+    }
+
+    @Test
+    @DisplayName("Ensure game determines if one or more players have 7 shields")
+    void RESP03_test_02(){
+        Game game = new Game();
+
+        game.P1.setShields(2);
+        game.P2.setShields(5);
+        game.P3.setShields(7);
+        game.P4.setShields(7);
+        game.play();
+
+        assertEquals(2,game.getWinners().size());
+    }
+
 
 }
 

@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Game {
 
@@ -7,19 +9,34 @@ public class Game {
 
     private Deck eventDeck = new Deck();
 
-    Player P1 = new Player();
-    Player P2 = new Player();
-    Player P3 = new Player();
-    Player P4 = new Player();
+    Player P1 = new Player("P1");
+    Player P2 = new Player("P2");
+    Player P3 = new Player("P3");
+    Player P4 = new Player("P4");
 
     Player[] players = {P1,P2,P3,P4};
+
+    private Set<Player> winners = new HashSet<>();
+
+
+    public int currentPlayerNum = 0;
+
 
     public Game(){
         adventureDeckSetup();
         eventDeckSetup();
     }
 
-    public void adventureDeckSetup(){
+    public void play(){
+
+    }
+
+
+    public void playTurn() {
+
+    }
+
+        public void adventureDeckSetup(){
         //Foe cards
         AdventureCard F5 = new AdventureCard("adventure","F5",5,8, "foe");
         AdventureCard F10 = new AdventureCard("adventure","F10",10,7, "foe");
@@ -104,6 +121,10 @@ public class Game {
 
     public Deck getEventDeck(){
         return eventDeck;
+    }
+
+    public Set<Player> getWinners(){
+        return winners;
     }
 
     public void displayHand(Player player){
