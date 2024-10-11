@@ -188,6 +188,46 @@ class GameTest {
 
     }
 
+    @Test
+    @DisplayName("Test if Plague card correctly removes shields from the player who draws the card")
+
+    void RESP06_test_01(){
+        Game game = new Game();
+        game.P1.setShields(2);
+        Deck testDeck = new Deck();
+
+        EventCard Plague = new EventCard("event","Plague",1);
+
+        testDeck.addCard(Plague);
+
+        game.setEventDeck(testDeck);
+
+        game.playTurn();
+
+        assertEquals(0, game.P1.getShields());
+
+    }
+
+    @Test
+    @DisplayName("Test if Plague card does not make the players shield go below 0")
+
+    void RESP06_test_02(){
+        Game game = new Game();
+        game.P1.setShields(1);
+        Deck testDeck = new Deck();
+
+        EventCard Plague = new EventCard("event","Plague",1);
+
+        testDeck.addCard(Plague);
+
+        game.setEventDeck(testDeck);
+
+        game.playTurn();
+
+        assertEquals(0, game.P1.getShields());
+
+    }
+
 
 
 }
