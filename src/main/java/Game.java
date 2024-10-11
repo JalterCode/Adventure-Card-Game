@@ -1,10 +1,18 @@
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class Game {
 
     private Deck adventureDeck = new Deck();
 
     private Deck eventDeck = new Deck();
 
-    Player[] players;
+    Player P1 = new Player();
+    Player P2 = new Player();
+    Player P3 = new Player();
+    Player P4 = new Player();
+
+    Player[] players = {P1,P2,P3,P4};
 
     public Game(){
         adventureDeckSetup();
@@ -40,6 +48,7 @@ public class Game {
         for (Card card : adventureCards) {
             adventureDeck.addCard(card);
         }
+        adventureDeck.shuffle();
     }
 
 
@@ -58,6 +67,7 @@ public class Game {
         for (Card card : cards) {
             eventDeck.addCard(card);
         }
+        eventDeck.shuffle();
     }
 
     public int countOccurrence(Deck deck, Card card){
@@ -71,12 +81,33 @@ public class Game {
         return count;
     }
 
+    public void drawAdventureCard(Player player){
+        if(adventureDeck.deckSize() > 0){
+            AdventureCard card = (AdventureCard) adventureDeck.getCards().remove(0);
+            player.addCardToHand(card);
+
+        }
+    }
+
+    public void distributeAdventureCards(){
+        for (Player player: players){
+            for(int i = 0; i<12;i++){
+                drawAdventureCard(player);
+                Collections.sort(player.getHand());
+            }
+        }
+    }
+
     public Deck getAdventureDeck(){
         return adventureDeck;
     }
 
     public Deck getEventDeck(){
         return eventDeck;
+    }
+
+    public void displayHand(Player player){
+
     }
 }
 
