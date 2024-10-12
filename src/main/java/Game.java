@@ -226,29 +226,33 @@ public class Game {
                 String input = scanner.next().trim();
 
                 if ("Quit".equalsIgnoreCase(input)) {
-                    quit = true; // Move to next stage
-                    System.out.println("Finished building stage " + (i + 1));
-                    System.out.println("Final Stage: " + stages.get(i) + "\n\n");
-                    break;
-                }
-
-                int pos;
-                try {
-                    pos = Integer.parseInt(input) - 1;
-                    if (pos >= 0 && pos < sponsorPlayer.getHand().size()) {
-                        // Remove card from hand
-                        AdventureCard card = sponsorPlayer.discardHand(pos);
-                        System.out.println("Added card: " + card);
-                        stages.get(i).add(card);
-                        System.out.println("Stage " + (i + 1) + ":" + stages.get(i) + "\n");
+                    if (stages.get(i).isEmpty()) {
+                        System.out.println("A stage cannot be empty");
                     } else {
-                        System.out.println("Invalid card position. Please try again.");
+                        System.out.println("Finished building stage " + (i + 1));
+                        System.out.println("Final Stage: " + stages.get(i) + "\n\n");
+                        break;
                     }
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input. Input must be an integer, please enter a number or 'Quit'.");
+                } else {
+                    try {
+                        int pos = Integer.parseInt(input) - 1;
+                        if (pos >= 0 && pos < sponsorPlayer.getHand().size()) {
+                            // Remove card from hand
+                            AdventureCard card = sponsorPlayer.discardHand(pos);
+                            System.out.println("Added card: " + card);
+                            stages.get(i).add(card);
+                            System.out.println("Stage " + (i + 1) + ":" + stages.get(i) + "\n");
+                        } else {
+                            System.out.println("Invalid card position. Please try again.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Input must be an integer, please enter a number or 'Quit'.");
+                    }
                 }
             }
         }
+
+
         System.out.println("Built all stages.");
         return stages;
     }
