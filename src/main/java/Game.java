@@ -323,6 +323,9 @@ public class Game {
         return sponsoringPlayer;
     }
 
+    public ArrayList<ArrayList<AdventureCard>> initializeStages(int stages) {
+        return null;
+    }
 }
 
 

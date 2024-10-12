@@ -857,6 +857,62 @@ class GameTest {
 
     }
 
+    @Test
+    @DisplayName("Check game correctly adds cards to a stage") //check if quest ended, discarded
+    void RESP16_test_01(){
+        Game game = new Game();
+        Deck testDeck = new Deck();
+        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        testDeck.addCard(F15);
+        testDeck.addCard(F20);
+        game.setAdventureDeck(testDeck);
+
+        for(int i = 0; i < 9; i++){
+            game.drawAdventureCard(game.P1);
+        }
+
+        QuestCard Q1 = new QuestCard("quest","Q2",1,3);
+        testDeck.addCard(Q1);
+
+        InputStream input1 = new ByteArrayInputStream("1\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("8\n".getBytes()); // Second response
+        InputStream input3 = new ByteArrayInputStream("5\n".getBytes()); // 3rd response
+        InputStream input4 = new ByteArrayInputStream("quit\n".getBytes()); // 3rd response
+
+        InputStream combinedInput = new SequenceInputStream(
+                new SequenceInputStream(
+                        new SequenceInputStream(input1, input2),
+                        input3
+                ),
+                input4
+        );
+
+        System.setIn(combinedInput);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.buildQuest(game.P1,Q1);
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("Final Stage: [F15, F20, F20]"),
+                "stage not correctly initialized");
+
+    }
+
+    @Test
+    @DisplayName("Check initializeStages functionality") //check if quest ended, discarded
+    void RESP16_test_02(){
+        Game game = new Game();
+        QuestCard Q1 = new QuestCard("quest","Q2",3,3);
+
+        ArrayList<ArrayList<AdventureCard>> actualStages = game.initializeStages(Q1.getStages());
+
+        assertEquals(3,actualStages.size()); //3 stages created
+
+    }
+
 }
 
 
