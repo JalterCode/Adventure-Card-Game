@@ -770,6 +770,82 @@ class GameTest {
                 "player prompted incorrect index of cards to choose from");
     }
 
+    @Test
+    @DisplayName("Check if game correctly determines if an integer input is out of bounds") //check if quest ended, discarded
+    void RESP15_test_01(){
+        Game game = new Game();
+        Deck testDeck = new Deck();
+        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        testDeck.addCard(F15);
+        testDeck.addCard(F20);
+        game.setAdventureDeck(testDeck);
+
+        for(int i = 0; i < 9; i++){
+            game.drawAdventureCard(game.P1);
+        }
+
+        QuestCard Q2 = new QuestCard("quest","Q2",1,3);
+        testDeck.addCard(Q2);
+
+        InputStream input1 = new ByteArrayInputStream("1000\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("Quit\n".getBytes()); // Second response
+
+
+        InputStream combinedInput = new SequenceInputStream(input1, input2);
+        System.setIn(combinedInput);
+
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.buildQuest(game.P1,Q2);
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("Invalid card position. Please try again."),
+                "doesn't correctly check if valid");
+
+    }
+
+    @Test
+    @DisplayName("Check if game correctly handles when a non integer is entered") //check if quest ended, discarded
+    void RESP15_test_02(){
+        Game game = new Game();
+        Deck testDeck = new Deck();
+        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        testDeck.addCard(F15);
+        testDeck.addCard(F20);
+        game.setAdventureDeck(testDeck);
+
+        for(int i = 0; i < 9; i++){
+            game.drawAdventureCard(game.P1);
+        }
+
+        QuestCard Q2 = new QuestCard("quest","Q2",1,3);
+        testDeck.addCard(Q2);
+
+        InputStream input1 = new ByteArrayInputStream("wedwqedwedewdwedwed\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("Quit\n".getBytes()); // Second response
+
+
+        InputStream combinedInput = new SequenceInputStream(input1, input2);
+        System.setIn(combinedInput);
+
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.buildQuest(game.P1,Q2);
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("Invalid input. Input must be an integer, please enter a number or 'Quit'."),
+                "doesn't correctly check if valid");
+
+    }
+
 }
 
 
