@@ -12,6 +12,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
+
+    public void pressReturn(){
+        String simulatedInput = "\n";
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in);
+    }
     @Test
     @DisplayName("Check Adventure Deck is 100 Cards")
     void RESP01_test_01(){
@@ -115,6 +121,7 @@ class GameTest {
         for(int i =0; i<numTurns; i++){
             Player currentPlayer = game.players[game.currentPlayerNum];
             actualOrder.add(currentPlayer.getID());
+            pressReturn();
             game.playTurn();
         }
 
@@ -127,10 +134,12 @@ class GameTest {
     void RESP03_test_02(){
         Game game = new Game();
 
-        game.P1.setShields(2);
+        game.P1.setShields(7);
         game.P2.setShields(5);
-        game.P3.setShields(7);
+        game.P3.setShields(2);
         game.P4.setShields(7);
+
+        pressReturn();
         game.play();
 
         assertEquals(2,game.getWinners().size());
@@ -140,6 +149,9 @@ class GameTest {
     void RESP04_test_01(){
         Game game = new Game();
         game.P1.setShields(7);
+
+        pressReturn();
+
         game.play();
         assertTrue(game.isGameFinished()); //terminate when winner
         assertEquals(1,game.getWinners().size()); //should only be one winner
@@ -181,6 +193,8 @@ class GameTest {
 
         Card expectedCard = game.getEventDeck().getCards().get(0);
 
+        pressReturn();
+
         game.playTurn();
 
         int updatedSize = game.getEventDeck().deckSize();
@@ -205,6 +219,8 @@ class GameTest {
 
         game.setEventDeck(testDeck);
 
+        pressReturn();
+
         game.playTurn();
 
         assertEquals(0, game.P1.getShields());
@@ -225,6 +241,8 @@ class GameTest {
 
         game.setEventDeck(testDeck);
 
+        pressReturn();
+
         game.playTurn();
 
         assertEquals(0, game.P1.getShields());
@@ -244,7 +262,12 @@ class GameTest {
         EventCard Queen = new EventCard("event","Queen's Favor",1);
         testDeck.addCard(Queen);
 
+        pressReturn();
+
         game.playTurn();
+
+
+
 
         assertEquals(2,game.P1.getHand().size());
     }
@@ -262,6 +285,8 @@ class GameTest {
         assertEquals(0, game.P2.getHand().size());
         assertEquals(0, game.P3.getHand().size());
         assertEquals(0, game.P4.getHand().size());
+
+        pressReturn();
 
 
         EventCard Queen = new EventCard("event","Prosperity",1);
@@ -429,6 +454,7 @@ class GameTest {
         assertEquals(1,game.getAdventureDeck().discardSize());
 
     }
+
     @Test
     @DisplayName("Test that the game correctly passes the turn to the next player after pressing enter")
     void RESP10_test_01() {
@@ -439,9 +465,9 @@ class GameTest {
 
         assertEquals(originalPlayer,game.players[game.currentPlayerNum]);
 
-        String simulatedInput = "\n";
-        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
-        System.setIn(in);
+        pressReturn();
+
+        game.play();
 
         Player currentPlayer = game.players[game.currentPlayerNum];
 
@@ -457,9 +483,7 @@ class GameTest {
         deck.addCard(Plague);
         game.setEventDeck(deck);
 
-        String simulatedInput = "\n";
-        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
-        System.setIn(in);
+        pressReturn();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
@@ -474,11 +498,3 @@ class GameTest {
     }
 
 }
-
-
-
-
-
-
-
-
