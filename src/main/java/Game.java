@@ -45,10 +45,18 @@ public class Game {
     }
 
     public void playTurn(){
+        System.out.println("It is now " + players[currentPlayerNum].getID() + "'s turn.");
         drawEventCard(players[currentPlayerNum]);
+        System.out.println(players[currentPlayerNum] + "'s turn has ended.");
+
+        System.out.println("Press <return> to end and pass your turn.");
+
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine(); // This waits for the player to press <return>
+
+        clearDisplay();
 
         currentPlayerNum = (currentPlayerNum + 1) % players.length;
-
     }
 
 
@@ -219,6 +227,10 @@ public class Game {
     public boolean isGameFinished(){
         return finished;
     }
+    public void clearDisplay() {
+        for (int i = 0; i < 50; i++) {
+            System.out.print("\n");
+        }
+    }
+
 }
-
-
