@@ -46,6 +46,7 @@ public class Game {
 
     public void playTurn(){
         System.out.println("It is now " + players[currentPlayerNum].getID() + "'s turn.");
+        System.out.println("Hand: " + players[currentPlayerNum].getHand());
         drawEventCard(players[currentPlayerNum]);
         System.out.println(players[currentPlayerNum] + "'s turn has ended.");
 
