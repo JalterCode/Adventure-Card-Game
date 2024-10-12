@@ -63,10 +63,6 @@ public class Game {
         currentPlayerNum = (currentPlayerNum + 1) % players.length;
     }
 
-    public void buildQuest(Player player, QuestCard card){
-
-    }
-
 
 
     public void adventureDeckSetup(){
@@ -216,18 +212,30 @@ public class Game {
         }
     }
 
-    public int trimHand(Player player) {
-        int n = player.getHand().size() - 12;
-
-        System.out.println("You must discard " + n + " cards.");
+    public void buildQuest(Player sponsorPlayer, QuestCard quest) {
+        //simply add the values of cards player chooses to an array that is of length of amount of stages
 
         Scanner scanner = new Scanner(System.in);
+
+        System.out.println(sponsorPlayer.getHand());
+        System.out.println("Enter the position of the card you want to select (1 to " + sponsorPlayer.getHand().size() + "):");
+        System.out.println("Press 'Quit' to end building this stage.");
+
+
+    }
+
+
+    public int trimHand(Player player) {
+        int n = player.getHand().size() - 12;
+        System.out.println("You must discard " + n + " cards.");
+        Scanner scanner = new Scanner(System.in);
+
         for (int i = 0; i < n; i++) {
             System.out.println(player.getHand());
             int pos = -1;
 
             do {
-                System.out.println("Enter the position of the card you want to discard (1 to " + player.getHand().size() + "):");
+                System.out.println("Enter the position of the card you want to select (1 to " + player.getHand().size() + "):");
 
                 if (scanner.hasNextInt()) {
                     pos = scanner.nextInt() - 1;
