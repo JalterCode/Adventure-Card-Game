@@ -913,6 +913,40 @@ class GameTest {
 
     }
 
+    @Test
+    @DisplayName("Test whether quit works when the user enters it before adding a card")
+    void RESP17_test_01(){
+        Game game = new Game();
+        Deck testDeck = new Deck();
+        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        testDeck.addCard(F15);
+        testDeck.addCard(F20);
+        game.setAdventureDeck(testDeck);
+
+        for(int i = 0; i < 9; i++){
+            game.drawAdventureCard(game.P1);
+        }
+
+        QuestCard Q1 = new QuestCard("quest","Q2",1,3);
+        testDeck.addCard(Q1);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+
+        String simulatedInput = "quit\n1\nquit\n";
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in);
+
+        System.setOut(printStream);
+
+        game.buildQuest(game.P1,Q1);
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("A stage cannot be empty"),
+                "program successfully quit with 0 cards, bad.");
+    }
+
 }
 
 
