@@ -497,4 +497,36 @@ class GameTest {
 
     }
 
+    @Test
+    @DisplayName("Check if player's hand is displayed at the beginning of turn")
+    void RESP11_test_01() {
+        Game game = new Game();
+        Deck deck = new Deck();
+
+
+        game.setAdventureDeck(deck);
+
+        AdventureCard F15 = new AdventureCard("adventure", "test1", 5, 5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure", "test2", 5, 5, "foe");
+        deck.addCard(F15);
+        deck.addCard(F20);
+
+
+        for (int i = 0; i < 10; i++) {
+            game.drawAdventureCard(game.P1);
+        }
+
+        pressReturn();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        game.playTurn();
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("Hand: [test1, test1, test1, test1, test1, test2, test2, test2, test2, test2]"),
+                "Player's hand was not displayed correctly at the beginning of the turn.");
+    }
+
 }
