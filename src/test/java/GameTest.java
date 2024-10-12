@@ -733,14 +733,14 @@ class GameTest {
         PrintStream printStream = new PrintStream(outputStream);
         System.setOut(printStream);
 
-        String simulatedInput = "Quit\n";
+        String simulatedInput = "1\nQuit\n";
         InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
         System.setIn(in);
 
         game.buildQuest(game.P1,Q2);
 
         String output = outputStream.toString();
-        assertTrue(output.contains("[F15, F15, F15, F15, F15, F20, F20, F20, F20]"),
+        assertTrue(output.contains("[F15, F15, F15, F15, F20, F20, F20, F20]"),
                 "hand incorrectly displayed");
     }
 
@@ -764,7 +764,7 @@ class GameTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
 
-        String simulatedInput = "Quit\n";
+        String simulatedInput = "1\nQuit\n";
         InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
         System.setIn(in);
 
@@ -799,13 +799,11 @@ class GameTest {
         QuestCard Q2 = new QuestCard("quest","Q2",1,3);
         testDeck.addCard(Q2);
 
-        InputStream input1 = new ByteArrayInputStream("1000\n".getBytes()); // First response
+        InputStream input1 = new ByteArrayInputStream("1000\n1\n".getBytes()); // First response
         InputStream input2 = new ByteArrayInputStream("Quit\n".getBytes()); // Second response
-
 
         InputStream combinedInput = new SequenceInputStream(input1, input2);
         System.setIn(combinedInput);
-
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
@@ -837,7 +835,7 @@ class GameTest {
         QuestCard Q2 = new QuestCard("quest","Q2",1,3);
         testDeck.addCard(Q2);
 
-        InputStream input1 = new ByteArrayInputStream("wedwqedwedewdwedwed\n".getBytes()); // First response
+        InputStream input1 = new ByteArrayInputStream("wedwqedwedewdwedwed\n1\n".getBytes()); // First response
         InputStream input2 = new ByteArrayInputStream("Quit\n".getBytes()); // Second response
 
 
@@ -912,7 +910,6 @@ class GameTest {
         assertEquals(3,actualStages.size()); //3 stages created
 
     }
-
     @Test
     @DisplayName("Test whether quit works when the user enters it before adding a card")
     void RESP17_test_01(){
@@ -946,7 +943,6 @@ class GameTest {
         assertTrue(output.contains("A stage cannot be empty"),
                 "program successfully quit with 0 cards, bad.");
     }
-
 }
 
 
