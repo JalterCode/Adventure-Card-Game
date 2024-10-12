@@ -212,28 +212,35 @@ public class Game {
         }
     }
 
-    public void buildQuest(Player sponsorPlayer, QuestCard quest) { //make this return arraylist of adventure cards later
+    public ArrayList<ArrayList<AdventureCard>> buildQuest(Player sponsorPlayer, QuestCard quest) {
         Scanner scanner = new Scanner(System.in);
+
+        ArrayList<ArrayList<AdventureCard>> stages = initializeStages(quest.getStages());
+
         for (int i = 0; i < quest.getStages(); i++) {
             boolean quit = false;
             while (!quit) {
+                System.out.println("Now building Stage " + (i + 1));
                 System.out.println(sponsorPlayer.getHand());
                 System.out.println("Enter the position of the card you want to select (1 to " + sponsorPlayer.getHand().size() + ") or 'Quit' to finish the stage:");
                 String input = scanner.next().trim();
 
                 if ("Quit".equalsIgnoreCase(input)) {
-                    quit = true; //move to next stage
+                    quit = true; // Move to next stage
                     System.out.println("Finished building stage " + (i + 1));
+                    System.out.println("Final Stage: " + stages.get(i) + "\n\n");
+                    break;
                 }
 
                 int pos;
                 try {
                     pos = Integer.parseInt(input) - 1;
                     if (pos >= 0 && pos < sponsorPlayer.getHand().size()) {
-
-                        //remove card from hand
-                        Card card = sponsorPlayer.discardHand(pos);
+                        // Remove card from hand
+                        AdventureCard card = sponsorPlayer.discardHand(pos);
                         System.out.println("Added card: " + card);
+                        stages.get(i).add(card);
+                        System.out.println("Stage " + (i + 1) + ":" + stages.get(i) + "\n");
                     } else {
                         System.out.println("Invalid card position. Please try again.");
                     }
@@ -243,7 +250,19 @@ public class Game {
             }
         }
         System.out.println("Built all stages.");
+        return stages;
     }
+
+    //TEST THIS ONE NOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    public ArrayList<ArrayList<AdventureCard>> initializeStages(int numStages) {
+        // All stages will be represented using a list of lists, containing the adventure cards that make up that stage
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        for (int i = 0; i < numStages; i++) {
+            stages.add(new ArrayList<>());
+        }
+        return stages;
+    }
+
 
 
 
@@ -323,9 +342,4 @@ public class Game {
         return sponsoringPlayer;
     }
 
-    public ArrayList<ArrayList<AdventureCard>> initializeStages(int stages) {
-        return null;
-    }
 }
-
-
