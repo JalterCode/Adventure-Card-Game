@@ -212,17 +212,39 @@ public class Game {
         }
     }
 
-    public void buildQuest(Player sponsorPlayer, QuestCard quest) {
-        //simply add the values of cards player chooses to an array that is of length of amount of stages
-
+    public void buildQuest(Player sponsorPlayer, QuestCard quest) { //make this return arraylist of adventure cards later
         Scanner scanner = new Scanner(System.in);
+        for (int i = 0; i < quest.getStages(); i++) {
+            boolean quit = false;
+            while (!quit) {
+                System.out.println(sponsorPlayer.getHand());
+                System.out.println("Enter the position of the card you want to select (1 to " + sponsorPlayer.getHand().size() + ") or 'Quit' to finish the stage:");
+                String input = scanner.next().trim();
 
-        System.out.println(sponsorPlayer.getHand());
-        System.out.println("Enter the position of the card you want to select (1 to " + sponsorPlayer.getHand().size() + "):");
-        System.out.println("Press 'Quit' to end building this stage.");
+                if ("Quit".equalsIgnoreCase(input)) {
+                    quit = true; //move to next stage
+                    System.out.println("Finished building stage " + (i + 1));
+                }
 
+                int pos;
+                try {
+                    pos = Integer.parseInt(input) - 1;
+                    if (pos >= 0 && pos < sponsorPlayer.getHand().size()) {
 
+                        //remove card from hand
+                        Card card = sponsorPlayer.discardHand(pos);
+                        System.out.println("Added card: " + card);
+                    } else {
+                        System.out.println("Invalid card position. Please try again.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Input must be an integer, please enter a number or 'Quit'.");
+                }
+            }
+        }
+        System.out.println("Built all stages.");
     }
+
 
 
     public int trimHand(Player player) {

@@ -597,7 +597,7 @@ class GameTest {
     }
 
     @Test
-    @DisplayName("Check if game correctly prompts the player") //check if quest ended, discarded
+    @DisplayName("Check if game correctly prompts the player")
     void RESP12_test_02() {
         Game game = new Game();
         Deck deck = new Deck();
@@ -630,6 +630,7 @@ class GameTest {
         assertTrue(output.contains("P2 has sponsored the quest"),
                 "incorrect sponsor");
     }
+
     @Test
     @DisplayName("Check if game handles the logic of each player pressing no and ending when it gets back to the player who inititate") //check if quest ended, discarded
     void RESP13_test_01() {
@@ -709,6 +710,7 @@ class GameTest {
         assertTrue(deck.getDiscard().contains(expectedCard));
 
     }
+
     @Test
     @DisplayName("Check if game correctly displays players hand") //check if quest ended, discarded
     void RESP14_test_01(){
@@ -725,11 +727,15 @@ class GameTest {
         }
 
 
-        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+        QuestCard Q2 = new QuestCard("quest", "Q2", 1, 3);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
         System.setOut(printStream);
+
+        String simulatedInput = "Quit\n";
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in);
 
         game.buildQuest(game.P1,Q2);
 
@@ -753,17 +759,22 @@ class GameTest {
             game.drawAdventureCard(game.P1);
         }
 
-
-        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+        QuestCard Q2 = new QuestCard("quest", "Q2", 1, 3);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
+
+        String simulatedInput = "Quit\n";
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in);
+
         System.setOut(printStream);
+
 
         game.buildQuest(game.P1,Q2);
 
         String output = outputStream.toString();
-        assertTrue(output.contains("Press 'Quit' to end building this stage."),
+        assertTrue(output.contains("'Quit' to finish the stage"),
                 "not prompted to quit");
 
         assertTrue(output.contains("Enter the position of the card you want to select (1 to 9)"),
