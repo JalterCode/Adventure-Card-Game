@@ -63,6 +63,10 @@ public class Game {
         currentPlayerNum = (currentPlayerNum + 1) % players.length;
     }
 
+    public void buildQuest(Player player, QuestCard card){
+
+    }
+
 
 
     public void adventureDeckSetup(){

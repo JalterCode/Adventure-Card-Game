@@ -709,6 +709,66 @@ class GameTest {
         assertTrue(deck.getDiscard().contains(expectedCard));
 
     }
+    @Test
+    @DisplayName("Check if game correctly displays players hand") //check if quest ended, discarded
+    void RESP14_test_01(){
+        Game game = new Game();
+        Deck deck = new Deck();
+        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        deck.addCard(F15);
+        deck.addCard(F20);
+        game.setAdventureDeck(deck);
+
+        for(int i = 0; i < 9; i++){
+            game.drawAdventureCard(game.P1);
+        }
+
+
+        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.buildQuest(game.P1,Q2);
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("[F15, F15, F15, F15, F15, F20, F20, F20, F20]"),
+                "hand incorrectly displayed");
+    }
+
+    @Test
+    @DisplayName("Check if game correctly prompts player to quit or select a card") //check if quest ended, discarded
+    void RESP14_test_02(){
+        Game game = new Game();
+        Deck deck = new Deck();
+        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        deck.addCard(F15);
+        deck.addCard(F20);
+        game.setAdventureDeck(deck);
+
+        for(int i = 0; i < 9; i++){
+            game.drawAdventureCard(game.P1);
+        }
+
+
+        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.buildQuest(game.P1,Q2);
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("Press 'Quit' to end building this stage."),
+                "not prompted to quit");
+
+        assertTrue(output.contains("Enter the position of the card you want to select (1 to 9)"),
+                "player prompted incorrect index of cards to choose from");
+    }
 
 }
 
