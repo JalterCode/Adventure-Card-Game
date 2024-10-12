@@ -6,6 +6,8 @@ public class Game {
 
     private Deck eventDeck = new Deck();
 
+    private Player sponsoringPlayer;
+
     Player P1 = new Player("P1");
     Player P2 = new Player("P2");
     Player P3 = new Player("P3");
@@ -233,5 +235,11 @@ public class Game {
             System.out.print("\n");
         }
     }
+
+    public Player getSponsoringPlayer() {
+        return sponsoringPlayer;
+    }
+
+
 
 }

@@ -1,10 +1,7 @@
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -528,5 +525,66 @@ class GameTest {
         assertTrue(output.contains("Hand: [test1, test1, test1, test1, test1, test2, test2, test2, test2, test2]"),
                 "Player's hand was not displayed correctly at the beginning of the turn.");
     }
+
+    @Test
+    @DisplayName("Check if sponsoring player is corectly assigned") //check if quest ended, discarded
+    void RESP12_test_01() {
+        Game game = new Game();
+        Deck deck = new Deck();
+        QuestCard Q2 = new QuestCard("quest","Q2",2,3);
+        deck.addCard(Q2);
+        game.setEventDeck(deck);
+
+        InputStream input1 = new ByteArrayInputStream("N\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("Y\n".getBytes()); // Second response
+
+        // Combine the input streams
+        InputStream combinedInput = new SequenceInputStream(input1, input2);
+
+        System.setIn(combinedInput);
+
+
+
+        game.drawEventCard(game.players[game.currentPlayerNum]);
+
+        assertTrue(game.getSponsoringPlayer().getID().equals(game.P2.getID()));
+
+    }
+
+    @Test
+    @DisplayName("Check if game correctly prompts the player") //check if quest ended, discarded
+    void RESP12_test_02() {
+        Game game = new Game();
+        Deck deck = new Deck();
+        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+        deck.addCard(Q2);
+        game.setEventDeck(deck);
+
+        InputStream input1 = new ByteArrayInputStream("N\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("Y\n".getBytes()); // Second response
+
+
+        InputStream combinedInput = new SequenceInputStream(input1, input2);
+        System.setIn(combinedInput);
+
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+
+        game.drawEventCard(game.players[game.currentPlayerNum]);
+
+
+        String output = outputStream.toString();
+
+
+        assertTrue(output.contains("Would you like to sponsor this quest, P1? (Y/N)"),
+                "game did not prompt");
+
+        assertTrue(output.contains("P2 has sponsored the quest"),
+                "incorrect sponsor");
+    }
+
 
 }
