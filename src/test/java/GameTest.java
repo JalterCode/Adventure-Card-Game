@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,6 +16,7 @@ class GameTest {
         InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
         System.setIn(in);
     }
+
     @Test
     @DisplayName("Check Adventure Deck is 100 Cards")
     void RESP01_test_01(){
@@ -112,8 +114,15 @@ class GameTest {
     @DisplayName("Ensure each player takes a turn, with it looping back to P1")
     void RESP03_test_01(){
         int numTurns = 5;
+
         List<String> actualOrder = new ArrayList<>();
         Game game = new Game();
+
+        Deck eventDeck = new Deck();
+        EventCard Test = new EventCard("event","Test",5);
+        eventDeck.addCard(Test);
+        game.setEventDeck(eventDeck);
+
         String[] expectedOrder = {"P1","P2","P3","P4","P1"};
         for(int i =0; i<numTurns; i++){
             Player currentPlayer = game.players[game.currentPlayerNum];
@@ -136,6 +145,11 @@ class GameTest {
         game.P3.setShields(2);
         game.P4.setShields(7);
 
+        Deck eventDeck = new Deck();
+        EventCard Test = new EventCard("event","Test",1);
+        eventDeck.addCard(Test);
+        game.setEventDeck(eventDeck);
+
         pressReturn();
         game.play();
 
@@ -146,6 +160,11 @@ class GameTest {
     void RESP04_test_01(){
         Game game = new Game();
         game.P1.setShields(7);
+
+        Deck eventDeck = new Deck();
+        EventCard Test = new EventCard("event","Test",1);
+        eventDeck.addCard(Test);
+        game.setEventDeck(eventDeck);
 
         pressReturn();
 
@@ -186,9 +205,20 @@ class GameTest {
 
         Game game = new Game();
 
+        Deck eventDeck = new Deck();
+        EventCard Test = new EventCard("event","Test1",1);
+        EventCard Test2 = new EventCard("event","Test2",3);
+        eventDeck.addCard(Test);
+        eventDeck.addCard(Test2);
+        eventDeck.shuffle();
+        game.setEventDeck(eventDeck);
+
         int initialSize = game.getEventDeck().deckSize();
 
         Card expectedCard = game.getEventDeck().getCards().get(0);
+
+
+
 
         pressReturn();
 
@@ -249,6 +279,7 @@ class GameTest {
     @Test
     @DisplayName("Test if Queen's Favor correctly adds 2 cards to players hand")
     void RESP07_test_01(){
+
         Game game = new Game();
         Deck testDeck = new Deck();
 
@@ -460,9 +491,16 @@ class GameTest {
 
         Player originalPlayer = game.players[game.currentPlayerNum];
 
+        Deck eventDeck = new Deck();
+        EventCard Test = new EventCard("event","Test",1);
+        eventDeck.addCard(Test);
+        game.setEventDeck(eventDeck);
+
+
         assertEquals(originalPlayer,game.players[game.currentPlayerNum]);
 
         pressReturn();
+
 
         game.play();
 
@@ -500,6 +538,14 @@ class GameTest {
         Game game = new Game();
         Deck deck = new Deck();
 
+        Deck eventDeck = new Deck();
+        EventCard Plague = new EventCard("event","Plague",1);
+        eventDeck.addCard(Plague);
+        game.setEventDeck(eventDeck);
+
+
+
+
 
         game.setAdventureDeck(deck);
 
@@ -525,7 +571,6 @@ class GameTest {
         assertTrue(output.contains("Hand: [test1, test1, test1, test1, test1, test2, test2, test2, test2, test2]"),
                 "Player's hand was not displayed correctly at the beginning of the turn.");
     }
-
     @Test
     @DisplayName("Check if sponsoring player is corectly assigned") //check if quest ended, discarded
     void RESP12_test_01() {
@@ -586,5 +631,12 @@ class GameTest {
                 "incorrect sponsor");
     }
 
-
 }
+
+
+
+
+
+
+
+
