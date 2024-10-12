@@ -15,7 +15,7 @@ public class Game {
 
     private Set<Player> winners = new HashSet<>();
 
-    private Player sponsoringPlayer;
+    private Player sponsoringPlayer = null;
 
     public int currentPlayerNum = 0;
     boolean finished = false;
@@ -139,8 +139,6 @@ public class Game {
         if(eventDeck.deckSize() == 0){
             eventDeck.reShuffle();
         }
-        Player startingPlayer = players[currentPlayerNum];
-        boolean questSponsored = false;
 
         Card card = eventDeck.getCards().remove(0);
 
@@ -154,31 +152,37 @@ public class Game {
         }
 
         if(card instanceof QuestCard){
-
-            while(!questSponsored){
-                questSponsored = askToSponsorQuest(players[currentPlayerNum]);
-                if(questSponsored){
-                    System.out.println(players[currentPlayerNum].getID() + " has sponsored the quest");
-                    ((QuestCard) card).setSponsored(true);
-                    sponsoringPlayer = players[currentPlayerNum];
-                    break;
-                }
-                currentPlayerNum = (currentPlayerNum + 1) % players.length;
-
-                if(players[currentPlayerNum].getID().equals(startingPlayer.getID())){
-                    break;
-                }
-            }
-            if(!(((QuestCard) card).isSponsored())){
-
-                System.out.println("nobody sponsored");
-            }
+            sponsorQuest(card);
         }
 
 
         return card;
     }
+    public void sponsorQuest(Card card){
+        Player startingPlayer = players[currentPlayerNum];
 
+        boolean questSponsored = false;
+
+        while(!questSponsored){
+            questSponsored = askToSponsorQuest(players[currentPlayerNum]);
+            if(questSponsored){
+                System.out.println(players[currentPlayerNum].getID() + " has sponsored the quest");
+                ((QuestCard) card).setSponsored(true);
+                sponsoringPlayer = players[currentPlayerNum];
+                break;
+            }
+            currentPlayerNum = (currentPlayerNum + 1) % players.length;
+
+            if(players[currentPlayerNum].getID().equals(startingPlayer.getID())){
+                break;
+            }
+        }
+        if(!(((QuestCard) card).isSponsored())){
+            eventDeck.discard(card);
+            System.out.println("Nobody sponsored");
+            System.out.println("Discarding the quest: " +card.getName());
+        }
+    }
     public boolean askToSponsorQuest(Player player) {
         Scanner scanner = new Scanner(System.in);
         String input = "";
@@ -286,3 +290,5 @@ public class Game {
     }
 
 }
+
+
