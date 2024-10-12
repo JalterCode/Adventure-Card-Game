@@ -429,6 +429,49 @@ class GameTest {
         assertEquals(1,game.getAdventureDeck().discardSize());
 
     }
+    @Test
+    @DisplayName("Test that the game correctly passes the turn to the next player after pressing enter")
+    void RESP10_test_01() {
+        Game game = new Game();
+        game.P2.setShields(7); //simply here to end the game as the loop would keep running
+
+        Player originalPlayer = game.players[game.currentPlayerNum];
+
+        assertEquals(originalPlayer,game.players[game.currentPlayerNum]);
+
+        String simulatedInput = "\n";
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in);
+
+        Player currentPlayer = game.players[game.currentPlayerNum];
+
+        assertEquals(game.P2,currentPlayer);
+    }
+    @Test
+    @DisplayName("Test that checks if the display is cleared after pressing enter")
+    void RESP10_test_02(){
+        Game game = new Game();
+        Deck deck = new Deck();
+
+        EventCard Plague = new EventCard("event","Plague",16); //fill the event deck with plagues so player doesnt overcap on cards
+        deck.addCard(Plague);
+        game.setEventDeck(deck);
+
+        String simulatedInput = "\n";
+        InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
+        System.setIn(in);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
+
+        game.playTurn();
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("\n\n\n"), // Check that a number of newlines were printed
+                "The display was not cleared after the player ended their turn.");
+
+    }
 
 }
 
