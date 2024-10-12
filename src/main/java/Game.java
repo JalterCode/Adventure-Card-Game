@@ -6,18 +6,16 @@ public class Game {
 
     private Deck eventDeck = new Deck();
 
-    private Player sponsoringPlayer;
-
     Player P1 = new Player("P1");
     Player P2 = new Player("P2");
     Player P3 = new Player("P3");
     Player P4 = new Player("P4");
 
-
-
     Player[] players = {P1,P2,P3,P4};
 
     private Set<Player> winners = new HashSet<>();
+
+    private Player sponsoringPlayer;
 
     public int currentPlayerNum = 0;
     boolean finished = false;
@@ -50,6 +48,9 @@ public class Game {
         System.out.println("It is now " + players[currentPlayerNum].getID() + "'s turn.");
         System.out.println("Hand: " + players[currentPlayerNum].getHand());
         drawEventCard(players[currentPlayerNum]);
+        if(players[currentPlayerNum].getHand().size() > 12){
+            trimHand(players[currentPlayerNum]);
+        }
         System.out.println(players[currentPlayerNum] + "'s turn has ended.");
 
         System.out.println("Press <return> to end and pass your turn.");
@@ -138,21 +139,65 @@ public class Game {
         if(eventDeck.deckSize() == 0){
             eventDeck.reShuffle();
         }
+        Player startingPlayer = players[currentPlayerNum];
+        boolean questSponsored = false;
 
         Card card = eventDeck.getCards().remove(0);
 
         System.out.println(player.getID() + " Draws the card: " + card);
 
-        eventDeck.discard(card);
+
 
         if(card instanceof EventCard){
             ((EventCard) card).handleEvent((EventCard) card, player, this);
+            eventDeck.discard(card); //event card needs to be discarded after effect is resolved
         }
 
-        if(player.getHand().size() > 12){
-            trimHand(player);
+        if(card instanceof QuestCard){
+
+            while(!questSponsored){
+                questSponsored = askToSponsorQuest(players[currentPlayerNum]);
+                if(questSponsored){
+                    System.out.println(players[currentPlayerNum].getID() + " has sponsored the quest");
+                    ((QuestCard) card).setSponsored(true);
+                    sponsoringPlayer = players[currentPlayerNum];
+                    break;
+                }
+                currentPlayerNum = (currentPlayerNum + 1) % players.length;
+
+                if(players[currentPlayerNum].getID().equals(startingPlayer.getID())){
+                    break;
+                }
+            }
+            if(!(((QuestCard) card).isSponsored())){
+                eventDeck.discard(card);
+                System.out.println("nobody sponsored");
+                System.out.println("Discarding the quest: " +card.getName());
+            }
         }
+
+
         return card;
+    }
+
+    public boolean askToSponsorQuest(Player player) {
+        Scanner scanner = new Scanner(System.in);
+        String input = "";
+
+
+        do {
+            System.out.println("Would you like to sponsor this quest, " + player.getID() + "? (Y/N)");
+
+            input = scanner.nextLine().trim().toUpperCase();
+
+            // check valid input
+            if (!input.equals("Y") && !input.equals("N")) {
+                System.out.println("Invalid input. Please enter 'Y' for Yes or 'N' for No.");
+            }
+
+        } while (!input.equals("Y") && !input.equals("N"));
+
+        return input.equals("Y"); //returns true if wants to sponsor
     }
 
     public void distributeAdventureCards(){
@@ -221,6 +266,7 @@ public class Game {
 
     public void displayHand(Player player){
 
+
     }
 
     public void setEventDeck(Deck eventDeck){
@@ -236,10 +282,8 @@ public class Game {
         }
     }
 
-    public Player getSponsoringPlayer() {
+    public Player getSponsoringPlayer(){
         return sponsoringPlayer;
     }
-
-
 
 }

@@ -2,6 +2,8 @@ public class QuestCard extends Card {
     private int stages;
     private String name;
 
+    private boolean sponsored;
+
 
 
 
@@ -13,6 +15,14 @@ public class QuestCard extends Card {
 
     public int getStages() {
         return stages;
+    }
+
+    public boolean isSponsored(){
+        return sponsored;
+    }
+
+    public void setSponsored(boolean sponsored){
+        this.sponsored = sponsored;
     }
 
 
