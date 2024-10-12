@@ -630,6 +630,85 @@ class GameTest {
         assertTrue(output.contains("P2 has sponsored the quest"),
                 "incorrect sponsor");
     }
+    @Test
+    @DisplayName("Check if game handles the logic of each player pressing no and ending when it gets back to the player who inititate") //check if quest ended, discarded
+    void RESP13_test_01() {
+
+        Game game = new Game();
+        Deck deck = new Deck();
+        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+        deck.addCard(Q2);
+        game.setEventDeck(deck);
+
+        InputStream input1 = new ByteArrayInputStream("N\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("N\n".getBytes()); // Second response
+        InputStream input3 = new ByteArrayInputStream("N\n".getBytes()); // 3rd response
+        InputStream input4 = new ByteArrayInputStream("N\n".getBytes()); // 4th response
+
+        InputStream combinedInput = new SequenceInputStream(
+                new SequenceInputStream(
+                        new SequenceInputStream(input1, input2),
+                        input3
+                ),
+                input4
+        );
+        System.setIn(combinedInput);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+
+        game.drawEventCard(game.players[game.currentPlayerNum]);
+
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("Would you like to sponsor this quest, P1? (Y/N)"),
+                "game did not prompt P1");
+        assertTrue(output.contains("Would you like to sponsor this quest, P2? (Y/N)"),
+                "game did not prompt P2");
+        assertTrue(output.contains("Would you like to sponsor this quest, P3? (Y/N)"),
+                "game did not prompt P3");
+        assertTrue(output.contains("Would you like to sponsor this quest, P4? (Y/N)"),
+                "game did not prompt P4");
+
+        assertTrue(output.contains("Nobody sponsored"),
+                "game did not prompt");
+
+        assertNull(game.getSponsoringPlayer());
+
+    }
+    @Test
+    @DisplayName("Check if game correctly discards quest card if nobody sponsors") //check if quest ended, discarded
+    void RESP13_test_02() {
+
+        Game game = new Game();
+        Deck deck = new Deck();
+        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+        deck.addCard(Q2);
+        game.setEventDeck(deck);
+
+        Card expectedCard = game.getEventDeck().getCards().get(0);
+
+
+        InputStream input1 = new ByteArrayInputStream("N\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("N\n".getBytes()); // Second response
+        InputStream input3 = new ByteArrayInputStream("N\n".getBytes()); // 3rd response
+        InputStream input4 = new ByteArrayInputStream("N\n".getBytes()); // 4th response
+
+        InputStream combinedInput = new SequenceInputStream(
+                new SequenceInputStream(
+                        new SequenceInputStream(input1, input2),
+                        input3
+                ),
+                input4
+        );
+        System.setIn(combinedInput);
+        game.drawEventCard(game.players[game.currentPlayerNum]);
+
+        assertTrue(deck.getDiscard().contains(expectedCard));
+
+    }
 
 }
 

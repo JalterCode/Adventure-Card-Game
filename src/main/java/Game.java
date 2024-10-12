@@ -170,9 +170,8 @@ public class Game {
                 }
             }
             if(!(((QuestCard) card).isSponsored())){
-                eventDeck.discard(card);
+
                 System.out.println("nobody sponsored");
-                System.out.println("Discarding the quest: " +card.getName());
             }
         }
 
