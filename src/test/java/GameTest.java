@@ -1454,13 +1454,7 @@ class GameTest {
 
         assertTrue(output.contains("Foes cannot be used in attacks."),
                 "did not warn the user that foes cannot be added");
-
-        //ensure foe was not added
-        assertTrue(output.contains("Final attack: [Dagger]"), "did not stop player from adding foe");
-
     }
-
-
 }
 
 

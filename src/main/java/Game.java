@@ -340,6 +340,8 @@ public class Game {
      */
     public void buildAttack(Player player, ArrayList<AdventureCard> currentStage) {
         Scanner scanner = new Scanner(System.in);
+        HashSet<String> usedWeapons = new HashSet<>();
+
         System.out.println("Now initiating " + player.getID() + "'s attack.");
         System.out.println("Enter 'Quit' to quit.");
 
@@ -351,15 +353,35 @@ public class Game {
             String input = scanner.next().trim();
             if ("Quit".equalsIgnoreCase(input)) {
                 quit = true;
-            }else{
-                int pos = Integer.parseInt(input) - 1;
-                AdventureCard card = player.getHand().get(pos);
-                System.out.println(player.getID() + " added " + card.getName() + " to their attack");
+            } else {
+                try {
+                    int pos = Integer.parseInt(input) - 1;
+                    // Check if the input is within the valid range
+                    if (pos < 0 || pos >= player.getHand().size()) {
+                        System.out.println("Error: Input out of range. Please enter a number between 1 and " + player.getHand().size() + ".");
+                    } else {
+                        // Get the selected card
+                        AdventureCard card = player.getHand().get(pos);
+                        if (card.getSubType().equals("foe")) {
+                            System.out.println("Foes cannot be used in attacks.");
+                        } else if (card.getSubType().equals("weapon") && usedWeapons.contains(card.getName())) {
+                            System.out.println("Cannot use two of the same weapon in an attack.");
+                        } else {
+                            player.discardHand(player.getHand().indexOf(card));
+                            System.out.println(player.getID() + " added " + card.getName() + " to their attack.");
+
+                            // Add the weapon to the usedWeapons set to track it
+                            usedWeapons.add(card.getName());
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a number or 'Quit' to finish.");
+                }
             }
         }
-
         System.out.println(player.getID() + " has finished building their attack.");
     }
+
 
     public boolean handleFoeCard(AdventureCard card, Player sponsorPlayer, ArrayList<ArrayList<AdventureCard>> stages, int stageIndex, boolean foeAdded){
         if (foeAdded) {
