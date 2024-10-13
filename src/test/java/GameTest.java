@@ -1137,7 +1137,90 @@ class GameTest {
                 "game allowed 2 insertions of the same card");
 
     }
+
+    @Test
+    @DisplayName("Test if game correctly displays eligible players (every player excluding sponsor")
+    public void RESP20_test_01(){
+        Game game = new Game();
+        game.setSponsoringPlayer(game.P1);
+        game.distributeAdventureCards();
+
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        AdventureCard F5 = new AdventureCard("adventure","F5",5,8, "foe");
+        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
+
+        stages.get(0).add(F5);
+        stages.get(0).add(Dagger);
+
+        InputStream input1 = new ByteArrayInputStream("n\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("n\n".getBytes()); // Second response
+        InputStream input3 = new ByteArrayInputStream("n\n".getBytes()); // Second response
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        input1, input2
+                ),
+                input3
+        ));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.beginQuest(stages);
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("Eligible players: [P2, P3, P4]"),
+                "did not correctly display the eligible players");
+
+    }
+    @Test
+    @DisplayName("Test if game correctly prompts the player in order if they are going to participate")
+    public void RESP20_test_02() {
+        Game game = new Game();
+        game.setSponsoringPlayer(game.P1);
+        game.distributeAdventureCards();
+
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 8, "foe");
+        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
+
+        stages.get(0).add(F5);
+        stages.get(0).add(Dagger);
+
+        InputStream input1 = new ByteArrayInputStream("n\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("n\n".getBytes()); // Second response
+        InputStream input3 = new ByteArrayInputStream("n\n".getBytes()); // Second response
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        input1, input2
+                ),
+                input3
+        ));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.beginQuest(stages);
+
+        String output = outputStream.toString();
+
+
+        int indexP2 = output.indexOf("P2, would you like to participate in the current quest?");
+        int indexP3 = output.indexOf("P3, would you like to participate in the current quest?");
+        int indexP4 = output.indexOf("P4, would you like to participate in the current quest?");
+
+        assertTrue(indexP2 < indexP3);
+        assertTrue(indexP3 < indexP4);
+    }
 }
+
+
 
 
 

@@ -409,4 +409,9 @@ public class Game {
         return sponsoringPlayer;
     }
 
+    public void beginQuest(ArrayList<ArrayList<AdventureCard>> stages) {
+    }
+
+    public void setSponsoringPlayer(Player p1) {
+    }
 }
