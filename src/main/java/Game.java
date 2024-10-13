@@ -334,6 +334,32 @@ public class Game {
         return stages;
     }
 
+    /**
+     *
+     *make this return arraylist so that the cards can all be removed in one shot later
+     */
+    public void buildAttack(Player player, ArrayList<AdventureCard> currentStage) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Now initiating " + player.getID() + "'s attack.");
+        System.out.println("Enter 'Quit' to quit.");
+
+        boolean quit = false;
+
+        while (!quit) {
+            System.out.println(player.getHand());
+            System.out.println("Enter the position of the card you want to select (1 to " + player.getHand().size() + ") or 'Quit' to end building this attack");
+            String input = scanner.next().trim();
+            if ("Quit".equalsIgnoreCase(input)) {
+                quit = true;
+            }else{
+                int pos = Integer.parseInt(input) - 1;
+                AdventureCard card = player.getHand().get(pos);
+                System.out.println(player.getID() + " added " + card.getName() + " to their attack");
+            }
+        }
+
+        System.out.println(player.getID() + " has finished building their attack.");
+    }
 
     public boolean handleFoeCard(AdventureCard card, Player sponsorPlayer, ArrayList<ArrayList<AdventureCard>> stages, int stageIndex, boolean foeAdded){
         if (foeAdded) {
@@ -484,8 +510,4 @@ public class Game {
         return this.sponsoringPlayer = sponsoringPlayer;
     }
 
-    public void buildAttack(Player p1, ArrayList<AdventureCard> adventureCards) {
-    }
 }
-
-
