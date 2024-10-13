@@ -1455,6 +1455,104 @@ class GameTest {
         assertTrue(output.contains("Foes cannot be used in attacks."),
                 "did not warn the user that foes cannot be added");
     }
+
+    @Test
+    @DisplayName("Test that only valid cards are added")
+    public void RESP24_test_01() {
+        // as all logic for all invalid inputs has been done, only need to check that it was not added for one case
+        Game game = new Game();
+
+        InputStream input1 = new ByteArrayInputStream("1\n".getBytes()); // simulate picking a foe
+        InputStream input2 = new ByteArrayInputStream("2\n".getBytes()); // select a valid card
+        InputStream input3 = new ByteArrayInputStream("quit\n".getBytes()); // finish building
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        input1, input2
+                ),
+                input3
+        ));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 8, "foe");
+        game.P1.addCardToHand(F5);
+        buildAttackInitialization(game);
+
+        String output = outputStream.toString();
+
+        //ensure foe was not added
+        assertTrue(output.contains("Final attack: [Dagger]"), "did not stop player from adding foe");
+    }
+
+    @Test
+    @DisplayName("Test that the selected card is displayed when added")
+    public void RESP24_test_02() {
+        Game game = new Game();
+
+        InputStream input1 = new ByteArrayInputStream("1\n".getBytes()); //Pick first card
+        InputStream input2 = new ByteArrayInputStream("1\n".getBytes()); // Pick second card
+        InputStream input3 = new ByteArrayInputStream("quit\n".getBytes()); //Quit
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        input1, input2
+                ),
+                input3
+        ));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        buildAttackInitialization(game);
+
+        String output = outputStream.toString();
+
+        //first card added to attack
+        assertTrue(output.contains("Current attack: [Dagger]"),
+                "incorrect attack");
+
+        assertTrue(output.contains("Current attack: [Dagger, Excalibur]"),
+                "incorrect attack");
+
+        int indexError = output.indexOf("Current attack: [Dagger]"); //ensure this version of attack happens first
+        int indexFinish = output.indexOf("Current attack: [Dagger, Excalibur]");
+
+        //ensure first version happens first
+        assertTrue(indexError < indexFinish);
+
+    }
+
+    @Test
+    @DisplayName("Test that final attack is displayed after user enters quit")
+    public void RESP24_test_03() {
+
+        Game game = new Game();
+
+        InputStream input1 = new ByteArrayInputStream("1\n".getBytes()); //Pick first card
+        InputStream input2 = new ByteArrayInputStream("1\n".getBytes()); // Pick second card
+        InputStream input3 = new ByteArrayInputStream("quit\n".getBytes()); //Quit
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        input1, input2
+                ),
+                input3
+        ));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        buildAttackInitialization(game);
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("Final attack: [Dagger, Excalibur]"),
+                "incorrect attack");
+    }
 }
 
 
