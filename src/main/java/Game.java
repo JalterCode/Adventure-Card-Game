@@ -218,6 +218,9 @@ public class Game {
 
         for (int i = 0; i < quest.getStages(); i++) {
             boolean quit = false;
+            boolean foeAdded = false; // Track if a foe has been added to the current stage
+            Set<String> usedWeapons = new HashSet<>(); // Track used weapon names for the current stage
+
             while (!quit) {
                 System.out.println("Now building Stage " + (i + 1));
                 System.out.println(sponsorPlayer.getHand());
@@ -226,15 +229,23 @@ public class Game {
 
                 if ("Quit".equalsIgnoreCase(input)) {
                     quit = handleQuitInput(i, stages);
-
                 } else {
                     try {
                         int pos = Integer.parseInt(input) - 1;
                         if (pos >= 0 && pos < sponsorPlayer.getHand().size()) {
-                            // Remove card from hand
-                            AdventureCard card = sponsorPlayer.discardHand(pos);
-                            System.out.println("Added card: " + card);
-                            stages.get(i).add(card);
+                            // Get the selected card
+                            AdventureCard card = sponsorPlayer.getHand().get(pos);
+
+                            // If the card is a foe, check if it has already been added (only one foe allowed)
+                            if (card.getSubType().equals("foe")) {
+                                if (handleFoeCard(card, sponsorPlayer, stages, i, foeAdded)) {
+                                    foeAdded = true; // Set foeAdded to true after successfully adding a foe
+                                }
+                            } else if (card.getSubType().equals("weapon")) {
+                                handleWeaponCard(card, sponsorPlayer, stages, i, usedWeapons);
+                            } else {
+                                System.out.println("Invalid card type for this stage. You can only add a foe or weapon.");
+                            }
                             System.out.println("Stage " + (i + 1) + ":" + stages.get(i) + "\n");
                         } else {
                             System.out.println("Invalid card position. Please try again.");
@@ -246,8 +257,35 @@ public class Game {
             }
         }
 
+
+        clearDisplay();
         System.out.println("Built all stages.");
         return stages;
+    }
+
+
+    public boolean handleFoeCard(AdventureCard card, Player sponsorPlayer, ArrayList<ArrayList<AdventureCard>> stages, int stageIndex, boolean foeAdded){
+        if (foeAdded) {
+            System.out.println("A foe has already been added to this stage. Please choose a different card.");
+            return false;
+        }
+        // Add foe to the stage
+        sponsorPlayer.discardHand(sponsorPlayer.getHand().indexOf(card));
+        stages.get(stageIndex).add(card);
+        System.out.println("Added foe: " + card);
+        return true;
+    }
+    private boolean handleWeaponCard(AdventureCard card, Player sponsorPlayer, ArrayList<ArrayList<AdventureCard>> stages, int stageIndex, Set<String> usedWeapons) {
+        if (usedWeapons.contains(card.getName())) {
+            System.out.println("This weapon has already been used in this stage. Please choose a different card.");
+            return false;
+        }
+        // Add weapon to the stage
+        sponsorPlayer.discardHand(sponsorPlayer.getHand().indexOf(card));
+        stages.get(stageIndex).add(card);
+        usedWeapons.add(card.getName());
+        System.out.println("Added weapon: " + card);
+        return true;
     }
 
     public boolean handleQuitInput(int stageIndex, ArrayList<ArrayList<AdventureCard>> stages) {
