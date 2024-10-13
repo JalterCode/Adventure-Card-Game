@@ -214,7 +214,6 @@ public class Game {
 
     public ArrayList<ArrayList<AdventureCard>> buildQuest(Player sponsorPlayer, QuestCard quest) {
         Scanner scanner = new Scanner(System.in);
-
         ArrayList<ArrayList<AdventureCard>> stages = initializeStages(quest.getStages());
 
         for (int i = 0; i < quest.getStages(); i++) {
@@ -226,13 +225,8 @@ public class Game {
                 String input = scanner.next().trim();
 
                 if ("Quit".equalsIgnoreCase(input)) {
-                    if (stages.get(i).isEmpty()) {
-                        System.out.println("A stage cannot be empty");
-                    } else {
-                        System.out.println("Finished building stage " + (i + 1));
-                        System.out.println("Final Stage: " + stages.get(i) + "\n\n");
-                        break;
-                    }
+                    quit = handleQuitInput(i, stages);
+
                 } else {
                     try {
                         int pos = Integer.parseInt(input) - 1;
@@ -252,12 +246,24 @@ public class Game {
             }
         }
 
-
         System.out.println("Built all stages.");
         return stages;
     }
 
-    //TEST THIS ONE NOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    public boolean handleQuitInput(int stageIndex, ArrayList<ArrayList<AdventureCard>> stages) {
+        if (stages.get(stageIndex).isEmpty()) {
+            System.out.println("A stage cannot be empty");
+            return false;
+        } else if (stageIndex > 0 && !isStageGreater(stages.get(stageIndex - 1),stages.get(stageIndex))) {
+            System.out.println("Insufficient value for this stage\n");
+            return false;
+        } else {
+            System.out.println("Finished building stage " + (stageIndex + 1));
+            System.out.println("Final Stage: " + stages.get(stageIndex) + "\n\n");
+            return true;
+        }
+    }
+
     public ArrayList<ArrayList<AdventureCard>> initializeStages(int numStages) {
         // All stages will be represented using a list of lists, containing the adventure cards that make up that stage
         ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
@@ -265,6 +271,25 @@ public class Game {
             stages.add(new ArrayList<>());
         }
         return stages;
+    }
+
+    public boolean isStageGreater(ArrayList<AdventureCard> previousStage, ArrayList<AdventureCard> currentStage){
+        int previousStageTotal = 0;
+        int currentStageTotal = 0;
+
+        for(AdventureCard card: previousStage){
+            previousStageTotal+= card.getValue();
+        }
+
+        for(AdventureCard card: currentStage){
+            currentStageTotal+= card.getValue();
+        }
+
+        if(currentStageTotal > previousStageTotal){
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -346,7 +371,4 @@ public class Game {
         return sponsoringPlayer;
     }
 
-    public boolean handleQuitInput(int i, ArrayList<ArrayList<AdventureCard>> stages) {
-        return true;
-    }
 }
