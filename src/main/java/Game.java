@@ -11,7 +11,7 @@ public class Game {
     Player P3 = new Player("P3");
     Player P4 = new Player("P4");
 
-    Player[] players = {P1,P2,P3,P4};
+    Player[] players = {P1, P2, P3, P4};
 
     private Set<Player> winners = new HashSet<>();
 
@@ -21,21 +21,21 @@ public class Game {
     boolean finished = false;
 
 
-    public Game(){
+    public Game() {
         adventureDeckSetup();
         eventDeckSetup();
     }
 
     public void play() {
         winners.clear();
-        while(!finished){
+        while (!finished) {
             playTurn();
-            for(Player player: players){
-                if(player.getShields()>= 7){
+            for (Player player : players) {
+                if (player.getShields() >= 7) {
                     winners.add(player);
                 }
             }
-            if(!winners.isEmpty()){
+            if (!winners.isEmpty()) {
                 System.out.println("Winners: " + winners);
                 System.out.println("Now ending game...");
                 finished = true;
@@ -44,11 +44,11 @@ public class Game {
         }
     }
 
-    public void playTurn(){
+    public void playTurn() {
         System.out.println("It is now " + players[currentPlayerNum].getID() + "'s turn.");
         System.out.println("Hand: " + players[currentPlayerNum].getHand());
         drawEventCard(players[currentPlayerNum]);
-        if(players[currentPlayerNum].getHand().size() > 12){
+        if (players[currentPlayerNum].getHand().size() > 12) {
             trimHand(players[currentPlayerNum]);
         }
         System.out.println(players[currentPlayerNum] + "'s turn has ended.");
@@ -64,19 +64,18 @@ public class Game {
     }
 
 
-
-    public void adventureDeckSetup(){
+    public void adventureDeckSetup() {
         //Foe cards
-        AdventureCard F5 = new AdventureCard("adventure","F5",5,8, "foe");
-        AdventureCard F10 = new AdventureCard("adventure","F10",10,7, "foe");
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,8, "foe");
-        AdventureCard F20 = new AdventureCard("adventure","F20",20,7, "foe");
-        AdventureCard F25 = new AdventureCard("adventure","F25",25,7, "foe");
-        AdventureCard F30 = new AdventureCard("adventure","F30",30,4, "foe");
-        AdventureCard F35 = new AdventureCard("adventure","F35",35,4, "foe");
-        AdventureCard F40 = new AdventureCard("adventure","F40",40,2, "foe");
-        AdventureCard F50 = new AdventureCard("adventure","F50",50,2, "foe");
-        AdventureCard F70 = new AdventureCard("adventure","F70",70,1, "foe");
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 8, "foe");
+        AdventureCard F10 = new AdventureCard("adventure", "F10", 10, 7, "foe");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 8, "foe");
+        AdventureCard F20 = new AdventureCard("adventure", "F20", 20, 7, "foe");
+        AdventureCard F25 = new AdventureCard("adventure", "F25", 25, 7, "foe");
+        AdventureCard F30 = new AdventureCard("adventure", "F30", 30, 4, "foe");
+        AdventureCard F35 = new AdventureCard("adventure", "F35", 35, 4, "foe");
+        AdventureCard F40 = new AdventureCard("adventure", "F40", 40, 2, "foe");
+        AdventureCard F50 = new AdventureCard("adventure", "F50", 50, 2, "foe");
+        AdventureCard F70 = new AdventureCard("adventure", "F70", 70, 1, "foe");
 
         AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
         AdventureCard Horse = new AdventureCard("adventure", "Horse", 10, 12, "weapon");
@@ -98,17 +97,17 @@ public class Game {
     }
 
 
-    public void eventDeckSetup(){
-        QuestCard Q2 = new QuestCard("quest","Q2",2,3);
-        QuestCard Q3 = new QuestCard("quest","Q3",3,4);
-        QuestCard Q4 = new QuestCard("quest","Q4",4,3);
-        QuestCard Q5 = new QuestCard("quest","Q5",5,2);
+    public void eventDeckSetup() {
+        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+        QuestCard Q3 = new QuestCard("quest", "Q3", 3, 4);
+        QuestCard Q4 = new QuestCard("quest", "Q4", 4, 3);
+        QuestCard Q5 = new QuestCard("quest", "Q5", 5, 2);
 
-        EventCard Plague = new EventCard("event","Plague",1);
-        EventCard QueenFavor = new EventCard("event","Queen's Favor",2);
-        EventCard Prosperity = new EventCard("event","Prosperity",2);
+        EventCard Plague = new EventCard("event", "Plague", 1);
+        EventCard QueenFavor = new EventCard("event", "Queen's Favor", 2);
+        EventCard Prosperity = new EventCard("event", "Prosperity", 2);
 
-        Card[] cards = { Q2, Q3, Q4, Q5, Plague, QueenFavor, Prosperity };
+        Card[] cards = {Q2, Q3, Q4, Q5, Plague, QueenFavor, Prosperity};
 
         for (Card card : cards) {
             eventDeck.addCard(card);
@@ -116,19 +115,19 @@ public class Game {
         eventDeck.shuffle();
     }
 
-    public int countOccurrence(Deck deck, Card card){
+    public int countOccurrence(Deck deck, Card card) {
         int count = 0;
 
-        for(Card searchCard: deck.getCards()){
-            if(searchCard.getName().equals(card.getName())){
+        for (Card searchCard : deck.getCards()) {
+            if (searchCard.getName().equals(card.getName())) {
                 count++;
             }
         }
         return count;
     }
 
-    public void drawAdventureCard(Player player){
-        if(adventureDeck.deckSize() > 0){
+    public void drawAdventureCard(Player player) {
+        if (adventureDeck.deckSize() > 0) {
             AdventureCard card = (AdventureCard) adventureDeck.getCards().remove(0);
             player.addCardToHand(card);
             Collections.sort(player.getHand());
@@ -136,8 +135,8 @@ public class Game {
         }
     }
 
-    public Card drawEventCard(Player player){
-        if(eventDeck.deckSize() == 0){
+    public Card drawEventCard(Player player) {
+        if (eventDeck.deckSize() == 0) {
             eventDeck.reShuffle();
         }
 
@@ -145,26 +144,27 @@ public class Game {
 
         System.out.println(player.getID() + " Draws the card: " + card);
 
-        if(card instanceof EventCard){
+        if (card instanceof EventCard) {
             ((EventCard) card).handleEvent((EventCard) card, player, this);
             eventDeck.discard(card); //event card needs to be discarded after effect is resolved
         }
 
-        if(card instanceof QuestCard){
+        if (card instanceof QuestCard) {
             sponsorQuest(card);
         }
 
 
         return card;
     }
-    public void sponsorQuest(Card card){
+
+    public void sponsorQuest(Card card) {
         Player startingPlayer = players[currentPlayerNum];
 
         boolean questSponsored = false;
 
-        while(!questSponsored){
+        while (!questSponsored) {
             questSponsored = askToSponsorQuest(players[currentPlayerNum]);
-            if(questSponsored){
+            if (questSponsored) {
                 System.out.println(players[currentPlayerNum].getID() + " has sponsored the quest");
                 ((QuestCard) card).setSponsored(true);
                 sponsoringPlayer = players[currentPlayerNum];
@@ -173,16 +173,17 @@ public class Game {
             }
             currentPlayerNum = (currentPlayerNum + 1) % players.length;
 
-            if(players[currentPlayerNum].getID().equals(startingPlayer.getID())){
+            if (players[currentPlayerNum].getID().equals(startingPlayer.getID())) {
                 break;
             }
         }
-        if(!(((QuestCard) card).isSponsored())){
+        if (!(((QuestCard) card).isSponsored())) {
             eventDeck.discard(card);
             System.out.println("Nobody sponsored");
-            System.out.println("Discarding the quest: " +card.getName());
+            System.out.println("Discarding the quest: " + card.getName());
         }
     }
+
     public boolean askToSponsorQuest(Player player) {
         Scanner scanner = new Scanner(System.in);
         String input;
@@ -225,6 +226,7 @@ public class Game {
     public void beginQuest(ArrayList<ArrayList<AdventureCard>> stages) {
 
         ArrayList<Player> initialPlayers = new ArrayList<>();
+        ArrayList<ArrayList<AdventureCard>> attacks = new ArrayList<>();
         ArrayList<AdventureCard> currentAttack;
 
         // Set all eligible players as initially participating
@@ -273,12 +275,15 @@ public class Game {
                     trimHand(player);
                 }
                 currentAttack = buildAttack(player);
+                attacks.add(currentAttack);
 
                 // Compare and determine if current attack is of less value than the current stage
                 if (calculateTotalValue(currentAttack) < calculateTotalValue(stages.get(stageIndex))) {
                     System.out.println(player.getID() + "'s attack was insufficient");
                     player.setParticipating(false); // Mark as not participating
                     toRemove.add(player); // Remove player immediately after failing attack
+                } else {
+                    System.out.println(player.getID() + "'s attack was sufficient");
                 }
             }
 
@@ -292,9 +297,12 @@ public class Game {
             }
         }
 
+        for(Player player: initialPlayers){
+            System.out.println(player.getID() + " is awarded with " + stages.size() + " shields");
+            player.setShields(stages.size());
+        }
         System.out.println("Quest ended.");
     }
-
 
     public int calculateTotalValue(ArrayList<AdventureCard> adventureList){
         int total = 0;
