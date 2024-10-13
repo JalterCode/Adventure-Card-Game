@@ -575,7 +575,7 @@ class GameTest {
         Deck questDeck = new Deck();
 
         AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 1, "foe");
-        AdventureCard Horse = new AdventureCard("adventure", "Horse", 10, 1, "weapon");
+        AdventureCard Horse = new AdventureCard("adventure", "Horse", 10, 1, "foe");
 
         adventureDeck.addCard(F5);
         adventureDeck.addCard(Horse);
@@ -1013,7 +1013,7 @@ class GameTest {
         stages.add(previousStage);
         stages.add(currentStage);
 
-        assertFalse(game.handleQuitInput(1, stages));
+        assertFalse(game.handleQuitInput(1, stages, true));
     }
 
     @Test
@@ -1032,7 +1032,7 @@ class GameTest {
         stages.add(previousStage);
         stages.add(currentStage);
 
-        assertFalse(game.handleQuitInput(1, stages));
+        assertFalse(game.handleQuitInput(1, stages, true));
     }
 
     @Test
@@ -1146,6 +1146,41 @@ class GameTest {
 
         assertTrue(output.contains("A foe has already been added to this stage. Please choose a different card."),
                 "game allowed 2 insertions of the same card");
+
+    }
+
+    @Test
+    @DisplayName("does game handle the situation where the player attempts to finish their selection w/o selecting a foe")
+    public void RESP19_test_03() {
+        Game game = new Game();
+        Deck testDeck = new Deck();
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 5, "foe");
+        AdventureCard W20 = new AdventureCard("adventure", "W20", 20, 4, "weapon");
+        testDeck.addCard(F15);
+        testDeck.addCard(W20);
+        game.setAdventureDeck(testDeck);
+
+        for (int i = 0; i < 9; i++) {
+            game.drawAdventureCard(game.P1);
+        }
+
+        InputStream input1 = new ByteArrayInputStream("8\nquit\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("1\nquit\n".getBytes()); // Second response
+
+        InputStream combinedInput = new SequenceInputStream(input1, input2);
+        System.setIn(combinedInput);
+        QuestCard Q1 = new QuestCard("quest", "Q1", 1, 3);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.buildQuest(game.P1, Q1);
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("There must be at least one foe per stage"),
+                "game allowed stage without foe.");
 
     }
 

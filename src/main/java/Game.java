@@ -329,7 +329,7 @@ public class Game {
                 String input = scanner.next().trim();
 
                 if ("Quit".equalsIgnoreCase(input)) {
-                    quit = handleQuitInput(i, stages);
+                    quit = handleQuitInput(i, stages, foeAdded);
                 } else {
                     try {
                         int pos = Integer.parseInt(input) - 1;
@@ -445,14 +445,17 @@ public class Game {
         return true;
     }
 
-    public boolean handleQuitInput(int stageIndex, ArrayList<ArrayList<AdventureCard>> stages) {
+    public boolean handleQuitInput(int stageIndex, ArrayList<ArrayList<AdventureCard>> stages, boolean foeAdded) {
         if (stages.get(stageIndex).isEmpty()) {
             System.out.println("A stage cannot be empty");
             return false;
         } else if (stageIndex > 0 && !isStageGreater(stages.get(stageIndex - 1),stages.get(stageIndex))) {
             System.out.println("Insufficient value for this stage\n");
             return false;
-        } else {
+        } else if(!foeAdded){
+            System.out.println("There must be at least one foe per stage\n");
+            return false;
+        }else {
             System.out.println("Finished building stage " + (stageIndex + 1));
             System.out.println("Final Stage: " + stages.get(stageIndex) + "\n\n");
             return true;
