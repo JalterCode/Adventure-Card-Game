@@ -6,6 +6,8 @@ public class Player {
     private ArrayList<AdventureCard> hand;
     private String ID;
 
+    private boolean participating = false;
+
     public Player(String ID){
         this.hand = new ArrayList<>();
         this.ID = ID;
@@ -14,10 +16,6 @@ public class Player {
     public void addCardToHand(AdventureCard card){
         hand.add(card);
     }
-
-    //public void useCard(AdventureCard card){
-    //    hand.remove(card);
-    //}
 
     public AdventureCard discardHand(int position){
         return hand.remove(position);
@@ -37,6 +35,14 @@ public class Player {
 
     public void setShields(int amount){
         this.shields = amount;
+    }
+
+    public void setParticipating(boolean participating) {
+        this.participating = participating;
+    }
+
+    public boolean isParticipating(){
+        return participating;
     }
 
     @Override

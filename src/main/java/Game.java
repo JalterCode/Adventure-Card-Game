@@ -144,8 +144,6 @@ public class Game {
 
         System.out.println(player.getID() + " Draws the card: " + card);
 
-
-
         if(card instanceof EventCard){
             ((EventCard) card).handleEvent((EventCard) card, player, this);
             eventDeck.discard(card); //event card needs to be discarded after effect is resolved
@@ -169,6 +167,7 @@ public class Game {
                 System.out.println(players[currentPlayerNum].getID() + " has sponsored the quest");
                 ((QuestCard) card).setSponsored(true);
                 sponsoringPlayer = players[currentPlayerNum];
+                buildQuest(sponsoringPlayer, (QuestCard) card);
                 break;
             }
             currentPlayerNum = (currentPlayerNum + 1) % players.length;
@@ -185,8 +184,7 @@ public class Game {
     }
     public boolean askToSponsorQuest(Player player) {
         Scanner scanner = new Scanner(System.in);
-        String input = "";
-
+        String input;
 
         do {
             System.out.println("Would you like to sponsor this quest, " + player.getID() + "? (Y/N)");
@@ -201,6 +199,59 @@ public class Game {
         } while (!input.equals("Y") && !input.equals("N"));
 
         return input.equals("Y"); //returns true if wants to sponsor
+    }
+
+    public boolean askToParticipate(Player player) {
+        Scanner scanner = new Scanner(System.in);
+        boolean validInput = false;
+        String input = null;
+
+        while (!validInput) {
+            input = scanner.nextLine().trim().toUpperCase();
+            if (input.equals("Y")) {
+                System.out.println(player.getID() + " has chosen to participate");
+                return true;
+            } else if (input.equals("N")) {
+                System.out.println(player.getID() + " has chosen to forfeit");
+                return false;
+            } else {
+                System.out.println("Invalid Input, Y/N");
+            }
+        }
+        return false;
+    }
+
+    public void beginQuest(ArrayList<ArrayList<AdventureCard>> stages) {
+
+        ArrayList<Player> initialPlayers = new ArrayList<>();
+
+        //set all eligible players as initially participating
+        for (Player player : players) {
+            if (!(player.getID().equals(sponsoringPlayer.getID()))) {
+                initialPlayers.add(player);
+                player.setParticipating(true);
+            }
+        }
+
+        System.out.println("Eligible players: " + initialPlayers);
+
+        for (int stageIndex = 0; stageIndex < stages.size(); stageIndex++) {
+            ArrayList<Player> toRemove = new ArrayList<>();
+            System.out.println("Current stage: " + (stageIndex + 1));
+
+            for (Player player : initialPlayers) {
+
+                System.out.println(player.getID() + ", would you like to participate in the current quest?");
+                player.setParticipating(askToParticipate(player));
+
+                if(!player.isParticipating()){
+                    toRemove.add(player);
+                }
+            }
+
+            initialPlayers.removeAll(toRemove);
+
+        }
     }
 
     public void distributeAdventureCards(){
@@ -259,7 +310,7 @@ public class Game {
 
 
         clearDisplay();
-        System.out.println("Built all stages.");
+        System.out.println("Built all stages. Now starting quest: " + quest.getName());
         return stages;
     }
 
@@ -408,10 +459,11 @@ public class Game {
     public Player getSponsoringPlayer(){
         return sponsoringPlayer;
     }
-
-    public void beginQuest(ArrayList<ArrayList<AdventureCard>> stages) {
+    // for testing purposes
+    public Player setSponsoringPlayer(Player sponsoringPlayer){
+        return this.sponsoringPlayer = sponsoringPlayer;
     }
 
-    public void setSponsoringPlayer(Player p1) {
-    }
 }
+
+
