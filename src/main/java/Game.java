@@ -341,6 +341,7 @@ public class Game {
     public void buildAttack(Player player, ArrayList<AdventureCard> currentStage) {
         Scanner scanner = new Scanner(System.in);
         HashSet<String> usedWeapons = new HashSet<>();
+        ArrayList<AdventureCard> attack = new ArrayList<>();
 
         System.out.println("Now initiating " + player.getID() + "'s attack.");
         System.out.println("Enter 'Quit' to quit.");
@@ -372,6 +373,11 @@ public class Game {
 
                             // Add the weapon to the usedWeapons set to track it
                             usedWeapons.add(card.getName());
+
+                            // Add the card to the attack
+                            attack.add(card);
+
+                            System.out.println("Current attack: " + attack);
                         }
                     }
                 } catch (NumberFormatException e) {
@@ -380,6 +386,7 @@ public class Game {
             }
         }
         System.out.println(player.getID() + " has finished building their attack.");
+        System.out.println("Final attack: " + attack);
     }
 
 
@@ -533,3 +540,5 @@ public class Game {
     }
 
 }
+
+
