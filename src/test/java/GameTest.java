@@ -943,6 +943,88 @@ class GameTest {
         assertTrue(output.contains("A stage cannot be empty"),
                 "program successfully quit with 0 cards, bad.");
     }
+
+    @Test
+    @DisplayName("Test functionality for handleQuitInput, ensuring that is false when new stage has less value")
+    public void RESP19_test_01(){
+        Game game = new Game();
+        ArrayList<ArrayList<AdventureCard>> stages = game.initializeStages(2);
+
+        ArrayList<AdventureCard> currentStage = new ArrayList<>();
+        currentStage.add(new AdventureCard("adventure", "Card1", 5, 5, "foe"));
+        currentStage.add(new AdventureCard("adventure", "Card2", 15, 7, "foe"));
+
+        ArrayList<AdventureCard> previousStage = new ArrayList<>();
+        previousStage.add(new AdventureCard("adventure", "Card3", 25, 3, "foe"));
+
+        stages.add(previousStage);
+        stages.add(currentStage);
+
+        assertFalse(game.handleQuitInput(1,stages));
+    }
+
+    @Test
+    @DisplayName("Test functionality for handleQuitInput, ensuring that is false when new stage has equal value")
+    public void RESP19_test_02(){
+        Game game = new Game();
+        ArrayList<ArrayList<AdventureCard>> stages = game.initializeStages(2);
+
+        ArrayList<AdventureCard> currentStage = new ArrayList<>();
+        currentStage.add(new AdventureCard("adventure", "Card1", 10, 5, "foe"));
+        currentStage.add(new AdventureCard("adventure", "Card2", 15, 7, "foe"));
+
+        ArrayList<AdventureCard> previousStage = new ArrayList<>();
+        previousStage.add(new AdventureCard("adventure", "Card3", 25, 3, "foe"));
+
+        stages.add(previousStage);
+        stages.add(currentStage);
+
+        assertFalse(game.handleQuitInput(1,stages));
+    }
+
+    @Test
+    @DisplayName("Test if game correctly displays that stage of insufficient value is being added when following game logic")
+    public void RESP19_test_03(){
+        Game game = new Game();
+        Deck testDeck = new Deck();
+        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        testDeck.addCard(F15);
+        testDeck.addCard(F20);
+        game.setAdventureDeck(testDeck);
+
+        for(int i = 0; i < 9; i++){
+            game.drawAdventureCard(game.P1);
+        }
+        InputStream input1 = new ByteArrayInputStream("1\nquit\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("1\nquit\n".getBytes()); // Second response
+        InputStream input3 = new ByteArrayInputStream("1\n".getBytes()); // 3rd response
+        InputStream input4 = new ByteArrayInputStream("quit\n".getBytes()); // 3rd response
+
+        InputStream combinedInput = new SequenceInputStream(
+                new SequenceInputStream(
+                        new SequenceInputStream(input1, input2),
+                        input3
+                ),
+                input4
+        );
+        System.setIn(combinedInput);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+
+        QuestCard Q2 = new QuestCard("quest","Q2",2,3);
+        testDeck.addCard(Q2);
+
+        System.setOut(printStream);
+
+        game.buildQuest(game.P1,Q2);
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("Insufficient value for this stage"),
+                "did not tell the user it was insufficient value");
+
+    }
 }
 
 

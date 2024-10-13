@@ -346,4 +346,7 @@ public class Game {
         return sponsoringPlayer;
     }
 
+    public boolean handleQuitInput(int i, ArrayList<ArrayList<AdventureCard>> stages) {
+        return true;
+    }
 }
