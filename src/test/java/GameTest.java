@@ -1356,6 +1356,110 @@ class GameTest {
                 "quit not functioning");
     }
 
+    public void buildAttackInitialization(Game game){
+        game.setSponsoringPlayer(game.P1);
+
+
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        AdventureCard Excalibur = new AdventureCard("adventure", "Excalibur", 30, 2, "weapon");
+        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
+        game.P1.addCardToHand((Dagger));
+        game.P1.addCardToHand(Excalibur);
+        game.P1.addCardToHand(Excalibur);
+
+        stages.get(0).add(Excalibur);
+        stages.get(0).add(Dagger);
+
+        game.buildAttack(game.P1, stages.get(0));
+
+    }
+    @Test
+    @DisplayName("Test that player inputs a valid position ")
+    public void RESP23_test_01() {
+        Game game = new Game();
+
+
+        InputStream input1 = new ByteArrayInputStream("100\n".getBytes()); // simulate out of range input
+        InputStream input2 = new ByteArrayInputStream("quit\n".getBytes()); // Second response
+        System.setIn(new SequenceInputStream(input1, input2));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        buildAttackInitialization(game);
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("Error: Input out of range."),
+                "did not warn the user that the input was out of range");
+    }
+
+    @Test
+    @DisplayName("Test that player inputs is re-prompted AFTER entering an invalid card")
+    public void RESP23_test_02() {
+        Game game = new Game();
+
+
+        InputStream input1 = new ByteArrayInputStream("100\n".getBytes()); // simulate out of range input
+        InputStream input2 = new ByteArrayInputStream("1\n".getBytes()); // Second response
+        InputStream input3 = new ByteArrayInputStream("quit\n".getBytes());
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        input1, input2
+                ),
+                input3
+        ));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        buildAttackInitialization(game);
+
+        String output = outputStream.toString();
+
+        int indexError = output.indexOf("Error: Input out of range."); //see that this happens before
+        int indexFinish = output.indexOf("P1 has finished building their attack."); //this is only triggered when successfully built, meaning they got reprompted
+
+        assertTrue(indexError < indexFinish);
+    }
+    @Test
+    @DisplayName("Test that player cannot enter a foe card")
+    public void RESP23_test_03() {
+        Game game = new Game();
+
+        InputStream input1 = new ByteArrayInputStream("1\n".getBytes()); // simulate picking a foe
+        InputStream input2 = new ByteArrayInputStream("2\n".getBytes()); // select a valid card
+        InputStream input3 = new ByteArrayInputStream("quit\n".getBytes()); // finish building
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        input1, input2
+                ),
+                input3
+        ));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 8, "foe");
+        game.P1.addCardToHand(F5);
+        buildAttackInitialization(game);
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("Foes cannot be used in attacks."),
+                "did not warn the user that foes cannot be added");
+
+        //ensure foe was not added
+        assertTrue(output.contains("Final attack: [Dagger]"), "did not stop player from adding foe");
+
+    }
+
 
 }
 
