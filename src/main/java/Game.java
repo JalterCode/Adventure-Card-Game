@@ -131,6 +131,7 @@ public class Game {
         if(adventureDeck.deckSize() > 0){
             AdventureCard card = (AdventureCard) adventureDeck.getCards().remove(0);
             player.addCardToHand(card);
+            Collections.sort(player.getHand());
 
         }
     }
@@ -224,8 +225,9 @@ public class Game {
     public void beginQuest(ArrayList<ArrayList<AdventureCard>> stages) {
 
         ArrayList<Player> initialPlayers = new ArrayList<>();
+        ArrayList<AdventureCard> currentAttack;
 
-        //set all eligible players as initially participating
+        // Set all eligible players as initially participating
         for (Player player : players) {
             if (!(player.getID().equals(sponsoringPlayer.getID()))) {
                 initialPlayers.add(player);
@@ -239,39 +241,67 @@ public class Game {
             ArrayList<Player> toRemove = new ArrayList<>();
             System.out.println("Current stage: " + (stageIndex + 1));
 
-
-            //determine if player wants to participate
+            // Determine if player wants to participate
             for (Player player : initialPlayers) {
+                if (!player.isParticipating()) {
+                    toRemove.add(player);
+                    continue; // Skip to the next player
+                }
+
                 System.out.println(player.getID() + ", would you like to participate in the current quest?");
                 player.setParticipating(askToParticipate(player));
 
-
-                //update list to remove player if they press no
-                if(!player.isParticipating()){
+                // Update list to remove player if they press no
+                if (!player.isParticipating()) {
                     toRemove.add(player);
                 }
-            }
+            } //
 
             initialPlayers.removeAll(toRemove);
 
-            //end the quest if there are no players
-            if(initialPlayers.size() == 0){
+            // End the quest if there are no players
+            if (initialPlayers.size() == 0) {
                 System.out.println("There are no more eligible players that can participate. Ending quest.");
                 break;
             }
 
-            //draw adventure card and possibly trim hand
-            for (Player player: initialPlayers){
+            // Draw adventure card and possibly trim hand
+            for (Player player : initialPlayers) {
                 System.out.println("\n" + player.getID() + " please setup an attack.");
                 drawAdventureCard(player);
-                if(player.getHand().size() > 12){
+                if (player.getHand().size() > 12) {
                     trimHand(player);
+                }
+                currentAttack = buildAttack(player);
+
+                // Compare and determine if current attack is of less value than the current stage
+                if (calculateTotalValue(currentAttack) < calculateTotalValue(stages.get(stageIndex))) {
+                    System.out.println(player.getID() + "'s attack was insufficient");
+                    player.setParticipating(false); // Mark as not participating
+                    toRemove.add(player); // Remove player immediately after failing attack
                 }
             }
 
+            // Remove players who failed the attack or declined participation
+            initialPlayers.removeAll(toRemove);
+
+            // If all players are out, end the quest
+            if (initialPlayers.size() == 0) {
+                System.out.println("There are no more eligible players that can participate. Ending quest.");
+                break;
+            }
         }
 
         System.out.println("Quest ended.");
+    }
+
+
+    public int calculateTotalValue(ArrayList<AdventureCard> adventureList){
+        int total = 0;
+        for(AdventureCard adventureCard: adventureList){
+            total += adventureCard.getValue();
+        }
+        return total;
     }
 
     public void distributeAdventureCards(){
@@ -338,7 +368,7 @@ public class Game {
      *
      *make this return arraylist so that the cards can all be removed in one shot later
      */
-    public void buildAttack(Player player) {
+    public ArrayList<AdventureCard> buildAttack(Player player) {
         Scanner scanner = new Scanner(System.in);
         HashSet<String> usedWeapons = new HashSet<>();
         ArrayList<AdventureCard> attack = new ArrayList<>();
@@ -387,6 +417,7 @@ public class Game {
         }
         System.out.println(player.getID() + " has finished building their attack.");
         System.out.println("Final attack: " + attack);
+        return attack;
     }
 
 
@@ -539,9 +570,6 @@ public class Game {
         return this.sponsoringPlayer = sponsoringPlayer;
     }
 
-    public int calculateTotalValue(ArrayList<AdventureCard> adventureCards) {
-        return 0;
-    }
 }
 
 
