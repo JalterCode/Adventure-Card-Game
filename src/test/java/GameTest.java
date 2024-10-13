@@ -1305,6 +1305,57 @@ class GameTest {
 
 
     }
+    @Test
+    @DisplayName("Test for if player is correctly prompted to either quit or add a card to their attack ")
+    public void RESP22_test_01() {
+        Game game = new Game();
+        game.setSponsoringPlayer(game.P1);
+
+
+
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        AdventureCard Excalibur = new AdventureCard("adventure", "Excalibur", 30, 2, "weapon");
+        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
+        game.P1.addCardToHand((Dagger));
+        game.P1.addCardToHand(Excalibur);
+        game.P1.addCardToHand(Excalibur);
+
+        stages.get(0).add(Excalibur);
+        stages.get(0).add(Dagger);
+
+        InputStream input1 = new ByteArrayInputStream("1\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("2\n".getBytes()); // Second response
+        InputStream input3 = new ByteArrayInputStream("quit\n".getBytes()); // Second response
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        input1, input2
+                ),
+                input3
+        ));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.buildAttack(game.P1, stages.get(0));
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("Enter the position of the card you want to select (1 to 3) or 'Quit' to end building this attack"),
+                "player not prompted");
+
+        assertTrue(output.contains("P1 added Dagger to their attack"),
+                "correct card not added");
+
+        assertTrue(output.contains("P1 added Excalibur to their attack"),
+                "correct card not added");
+
+        assertTrue(output.contains("P1 has finished building their attack."),
+                "quit not functioning");
+    }
+
 
 }
 

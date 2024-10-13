@@ -484,6 +484,8 @@ public class Game {
         return this.sponsoringPlayer = sponsoringPlayer;
     }
 
+    public void buildAttack(Player p1, ArrayList<AdventureCard> adventureCards) {
+    }
 }
 
 
