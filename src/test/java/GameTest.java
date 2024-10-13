@@ -571,55 +571,77 @@ class GameTest {
         assertTrue(output.contains("Hand: [test1, test1, test1, test1, test1, test2, test2, test2, test2, test2]"),
                 "Player's hand was not displayed correctly at the beginning of the turn.");
     }
-    @Test
-    @DisplayName("Check if sponsoring player is corectly assigned") //check if quest ended, discarded
-    void RESP12_test_01() {
-        Game game = new Game();
-        Deck deck = new Deck();
-        QuestCard Q2 = new QuestCard("quest","Q2",2,3);
-        deck.addCard(Q2);
-        game.setEventDeck(deck);
+
+    void setUpCorrect(Game game){
+
+        Deck adventureDeck = new Deck();
+        Deck questDeck = new Deck();
+
+        AdventureCard F5 = new AdventureCard("adventure","F5",5,1, "foe");
+        AdventureCard Horse = new AdventureCard("adventure", "Horse", 10, 1, "weapon");
+
+        adventureDeck.addCard(F5);
+        adventureDeck.addCard(Horse);
+
+        QuestCard quest = new QuestCard("quest", "Q2", 2, 3);
+        questDeck.addCard(quest);
+
+        // Set the correct decks
+        game.setAdventureDeck(adventureDeck);  // Adventure cards in adventure deck
+        game.setEventDeck(questDeck);          // Quest cards in event deck
+
+        // Draw adventure cards for player P2
+        game.drawAdventureCard(game.P2);
+        game.drawAdventureCard(game.P2);
+
+        // Draw a quest/event card for the current player
+        game.drawEventCard(game.players[game.currentPlayerNum]);
+
+    }
+    void inputsForQuestValid(){
+
 
         InputStream input1 = new ByteArrayInputStream("N\n".getBytes()); // First response
         InputStream input2 = new ByteArrayInputStream("Y\n".getBytes()); // Second response
+        InputStream input3 = new ByteArrayInputStream("1\nquit\n".getBytes()); // 3rd response
+        InputStream input4 = new ByteArrayInputStream("1\nquit\n".getBytes()); // 4th response
 
-        // Combine the input streams
-        InputStream combinedInput = new SequenceInputStream(input1, input2);
+
+        InputStream combinedInput = new SequenceInputStream(
+                new SequenceInputStream(
+                        new SequenceInputStream(input1, input2),
+                        input3
+                ),
+                input4
+        );
+
 
         System.setIn(combinedInput);
 
-
-
-        game.drawEventCard(game.players[game.currentPlayerNum]);
-
-        assertTrue(game.getSponsoringPlayer().getID().equals(game.P2.getID()));
-
     }
+    @Test
+    @DisplayName("Check if sponsoring player is correctly assigned") //check if quest ended, discarded
+    void RESP12_test_01() {
+        Game game = new Game();
+        inputsForQuestValid();
+        setUpCorrect(game);
+
+        // Check that P2 is correctly assigned as the sponsoring player
+        assertTrue(game.getSponsoringPlayer().getID().equals(game.P2.getID()));
+    }
+
 
     @Test
     @DisplayName("Check if game correctly prompts the player")
     void RESP12_test_02() {
         Game game = new Game();
-        Deck deck = new Deck();
-        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
-        deck.addCard(Q2);
-        game.setEventDeck(deck);
-
-        InputStream input1 = new ByteArrayInputStream("N\n".getBytes()); // First response
-        InputStream input2 = new ByteArrayInputStream("Y\n".getBytes()); // Second response
-
-
-        InputStream combinedInput = new SequenceInputStream(input1, input2);
-        System.setIn(combinedInput);
-
+        inputsForQuestValid();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
         System.setOut(printStream);
 
-
-        game.drawEventCard(game.players[game.currentPlayerNum]);
-
+        setUpCorrect(game);
 
         String output = outputStream.toString();
 
@@ -861,9 +883,9 @@ class GameTest {
         Game game = new Game();
         Deck testDeck = new Deck();
         AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        AdventureCard Dagger = new AdventureCard("adventure","Dagger",5,4, "weapon");
         testDeck.addCard(F15);
-        testDeck.addCard(F20);
+        testDeck.addCard(Dagger);
         game.setAdventureDeck(testDeck);
 
         for(int i = 0; i < 9; i++){
@@ -874,17 +896,10 @@ class GameTest {
         testDeck.addCard(Q1);
 
         InputStream input1 = new ByteArrayInputStream("1\n".getBytes()); // First response
-        InputStream input2 = new ByteArrayInputStream("8\n".getBytes()); // Second response
-        InputStream input3 = new ByteArrayInputStream("5\n".getBytes()); // 3rd response
-        InputStream input4 = new ByteArrayInputStream("quit\n".getBytes()); // 3rd response
+        InputStream input2 = new ByteArrayInputStream("8\nquit\n".getBytes()); // Second response
 
-        InputStream combinedInput = new SequenceInputStream(
-                new SequenceInputStream(
-                        new SequenceInputStream(input1, input2),
-                        input3
-                ),
-                input4
-        );
+
+        InputStream combinedInput = new SequenceInputStream(input1,input2);
 
         System.setIn(combinedInput);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -894,7 +909,7 @@ class GameTest {
         game.buildQuest(game.P1,Q1);
 
         String output = outputStream.toString();
-        assertTrue(output.contains("Final Stage: [F15, F20, F20]"),
+        assertTrue(output.contains("Final Stage: [F15, Dagger]"),
                 "stage not correctly initialized");
 
     }
@@ -1016,9 +1031,9 @@ class GameTest {
         Game game = new Game();
         Deck testDeck = new Deck();
         AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        AdventureCard W20 = new AdventureCard("adventure","W20",20,4, "weapon");
         testDeck.addCard(F15);
-        testDeck.addCard(F20);
+        testDeck.addCard(W20);
         game.setAdventureDeck(testDeck);
 
         for(int i = 0; i < 9; i++){
@@ -1026,7 +1041,7 @@ class GameTest {
         }
         InputStream input1 = new ByteArrayInputStream("1\nquit\n".getBytes()); // First response
         InputStream input2 = new ByteArrayInputStream("1\nquit\n".getBytes()); // Second response
-        InputStream input3 = new ByteArrayInputStream("1\n".getBytes()); // 3rd response
+        InputStream input3 = new ByteArrayInputStream("7\n".getBytes()); // 3rd response
         InputStream input4 = new ByteArrayInputStream("quit\n".getBytes()); // 3rd response
 
         InputStream combinedInput = new SequenceInputStream(
@@ -1051,6 +1066,75 @@ class GameTest {
         String output = outputStream.toString();
         assertTrue(output.contains("Insufficient value for this stage"),
                 "did not tell the user it was insufficient value");
+
+    }
+
+    @Test
+    @DisplayName("Test if game correctly handles the situation where 2 of the same weapon card is added ")
+    public void RESP19_test_01(){
+        Game game = new Game();
+        Deck testDeck = new Deck();
+        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
+        AdventureCard W20 = new AdventureCard("adventure","W20",20,4, "weapon");
+        testDeck.addCard(F15);
+        testDeck.addCard(W20);
+        game.setAdventureDeck(testDeck);
+
+        for(int i = 0; i < 9; i++){
+            game.drawAdventureCard(game.P1);
+        }
+
+        InputStream input1 = new ByteArrayInputStream("8\n8\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("1\nquit\n".getBytes()); // Second response
+
+        InputStream combinedInput = new SequenceInputStream(input1,input2);
+        System.setIn(combinedInput);
+        QuestCard Q1 = new QuestCard("quest","Q1",1,3);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.buildQuest(game.P1,Q1);
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("This weapon has already been used in this stage. Please choose a different card."),
+                "game allowed 2 insertions of the same card");
+
+    }
+    @Test
+    @DisplayName("Test if game correctly handles the situation where the player attempts to add a foe when one is already in the stage")
+    public void RESP19_test_02(){
+        Game game = new Game();
+        Deck testDeck = new Deck();
+        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
+        AdventureCard W20 = new AdventureCard("adventure","W20",20,4, "weapon");
+        testDeck.addCard(F15);
+        testDeck.addCard(W20);
+        game.setAdventureDeck(testDeck);
+
+        for(int i = 0; i < 9; i++){
+            game.drawAdventureCard(game.P1);
+        }
+
+        InputStream input1 = new ByteArrayInputStream("1\n1\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("8\nquit\n".getBytes()); // Second response
+
+        InputStream combinedInput = new SequenceInputStream(input1,input2);
+        System.setIn(combinedInput);
+        QuestCard Q1 = new QuestCard("quest","Q1",1,3);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.buildQuest(game.P1,Q1);
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("A foe has already been added to this stage. Please choose a different card."),
+                "game allowed 2 insertions of the same card");
 
     }
 }
