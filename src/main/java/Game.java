@@ -239,11 +239,14 @@ public class Game {
             ArrayList<Player> toRemove = new ArrayList<>();
             System.out.println("Current stage: " + (stageIndex + 1));
 
-            for (Player player : initialPlayers) {
 
+            //determine if player wants to participate
+            for (Player player : initialPlayers) {
                 System.out.println(player.getID() + ", would you like to participate in the current quest?");
                 player.setParticipating(askToParticipate(player));
 
+
+                //update list to remove player if they press no
                 if(!player.isParticipating()){
                     toRemove.add(player);
                 }
@@ -251,7 +254,24 @@ public class Game {
 
             initialPlayers.removeAll(toRemove);
 
+            //end the quest if there are no players
+            if(initialPlayers.size() == 0){
+                System.out.println("There are no more eligible players that can participate. Ending quest.");
+                break;
+            }
+
+            //draw adventure card and possibly trim hand
+            for (Player player: initialPlayers){
+                System.out.println("\n" + player.getID() + " please setup an attack.");
+                drawAdventureCard(player);
+                if(player.getHand().size() > 12){
+                    trimHand(player);
+                }
+            }
+
         }
+
+        System.out.println("Quest ended.");
     }
 
     public void distributeAdventureCards(){
