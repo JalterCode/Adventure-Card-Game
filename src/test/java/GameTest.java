@@ -945,8 +945,36 @@ class GameTest {
     }
 
     @Test
+    @DisplayName("Test functionality for isStageGreater than, where current stage is greater")
+    public void RESP18_test_01() {
+        Game game = new Game();
+        ArrayList<AdventureCard> currentStage = new ArrayList<>();
+        currentStage.add(new AdventureCard("adventure", "Card1", 10, 5, "foe"));
+        currentStage.add(new AdventureCard("adventure", "Card2", 15, 7, "foe"));
+
+        ArrayList<AdventureCard> previousStage = new ArrayList<>();
+        previousStage.add(new AdventureCard("adventure", "Card3", 20, 3, "foe"));
+
+        assertTrue(game.isStageGreater(previousStage, currentStage));
+    }
+
+    @Test
+    @DisplayName("Test functionality for isStageGreater than, where current stage is equal")
+    public void RESP18_test_02() {
+        Game game = new Game();
+        ArrayList<AdventureCard> currentStage = new ArrayList<>();
+        currentStage.add(new AdventureCard("adventure", "Card1", 10, 5, "foe"));
+        currentStage.add(new AdventureCard("adventure", "Card2", 15, 7, "foe"));
+
+        ArrayList<AdventureCard> previousStage = new ArrayList<>();
+        previousStage.add(new AdventureCard("adventure", "Card3", 25, 3, "foe"));
+
+        assertFalse(game.isStageGreater(previousStage, currentStage));
+    }
+
+    @Test
     @DisplayName("Test functionality for handleQuitInput, ensuring that is false when new stage has less value")
-    public void RESP19_test_01(){
+    public void RESP18_test_03(){
         Game game = new Game();
         ArrayList<ArrayList<AdventureCard>> stages = game.initializeStages(2);
 
@@ -965,7 +993,7 @@ class GameTest {
 
     @Test
     @DisplayName("Test functionality for handleQuitInput, ensuring that is false when new stage has equal value")
-    public void RESP19_test_02(){
+    public void RESP18_test_04(){
         Game game = new Game();
         ArrayList<ArrayList<AdventureCard>> stages = game.initializeStages(2);
 
@@ -984,7 +1012,7 @@ class GameTest {
 
     @Test
     @DisplayName("Test if game correctly displays that stage of insufficient value is being added when following game logic")
-    public void RESP19_test_03(){
+    public void RESP18_test_05(){
         Game game = new Game();
         Deck testDeck = new Deck();
         AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
