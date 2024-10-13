@@ -1218,6 +1218,94 @@ class GameTest {
         assertTrue(indexP2 < indexP3);
         assertTrue(indexP3 < indexP4);
     }
+
+    @Test
+    @DisplayName("test if game correctly prompts player to trim their hand if and only if they are participating")
+    public void RESP21_test_01() {
+        Game game = new Game();
+        game.setSponsoringPlayer(game.P1);
+        game.distributeAdventureCards(); //in this scenario, each player will need to trim as they start with 12
+
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        AdventureCard F5 = new AdventureCard("adventure","F5",5,8, "foe");
+        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
+
+        stages.get(0).add(F5);
+        stages.get(0).add(Dagger);
+
+        InputStream input1 = new ByteArrayInputStream("n\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("n\n".getBytes()); // Second response
+        InputStream input3 = new ByteArrayInputStream("y\n".getBytes()); // p4 participates
+        InputStream input4 = new ByteArrayInputStream("1\n".getBytes()); // discards their first card
+
+        InputStream combinedInput = new SequenceInputStream(
+                new SequenceInputStream(
+                        new SequenceInputStream(input1, input2),
+                        input3
+                ),
+                input4
+        );
+        System.setIn(combinedInput);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.beginQuest(stages);
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("You must discard 1 cards"),
+                "player was not prompted");
+        assertTrue(output.contains("was successfully discarded"),
+                "card not discarded");
+
+        assertEquals(1,game.getAdventureDeck().getDiscard().size()); //ensure discard pile is still updated
+
+    }
+
+    @Test
+    @DisplayName("Test for if quest correctly terminates of all players decline to participate")
+    public void RESP21_test_02() {
+        Game game = new Game();
+        game.setSponsoringPlayer(game.P1);
+        game.distributeAdventureCards(); //in this scenario, each player will need to trim as they start with 12
+
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        AdventureCard F5 = new AdventureCard("adventure","F5",5,8, "foe");
+        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
+
+        stages.get(0).add(F5);
+        stages.get(0).add(Dagger);
+        InputStream input1 = new ByteArrayInputStream("n\n".getBytes()); // First response
+        InputStream input2 = new ByteArrayInputStream("n\n".getBytes()); // Second response
+        InputStream input3 = new ByteArrayInputStream("n\n".getBytes()); // Second response
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        input1, input2
+                ),
+                input3
+        ));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        game.beginQuest(stages);
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("There are no more eligible players that can participate. Ending quest."),
+                "still eligible players");
+        assertTrue(output.contains("Quest ended"),
+                "card not discarded");
+
+
+    }
+
 }
 
 
