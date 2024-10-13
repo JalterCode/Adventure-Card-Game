@@ -338,7 +338,7 @@ public class Game {
      *
      *make this return arraylist so that the cards can all be removed in one shot later
      */
-    public void buildAttack(Player player, ArrayList<AdventureCard> currentStage) {
+    public void buildAttack(Player player) {
         Scanner scanner = new Scanner(System.in);
         HashSet<String> usedWeapons = new HashSet<>();
         ArrayList<AdventureCard> attack = new ArrayList<>();
@@ -539,6 +539,9 @@ public class Game {
         return this.sponsoringPlayer = sponsoringPlayer;
     }
 
+    public int calculateTotalValue(ArrayList<AdventureCard> adventureCards) {
+        return 0;
+    }
 }
 
 

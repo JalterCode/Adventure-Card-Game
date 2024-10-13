@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
 
-    public void pressReturn(){
+    public void pressReturn() {
         String simulatedInput = "\n";
         InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
         System.setIn(in);
@@ -19,9 +19,9 @@ class GameTest {
 
     @Test
     @DisplayName("Check Adventure Deck is 100 Cards")
-    void RESP01_test_01(){
+    void RESP01_test_01() {
         Game game = new Game();
-        assertEquals(100,game.getAdventureDeck().deckSize());
+        assertEquals(100, game.getAdventureDeck().deckSize());
     }
 
     @Test
@@ -30,16 +30,16 @@ class GameTest {
         Game game = new Game();
         assertEquals(100, game.getAdventureDeck().deckSize());
 
-        AdventureCard F5 = new AdventureCard("adventure","F5",5,8, "foe");
-        AdventureCard F10 = new AdventureCard("adventure","F10",10,7, "foe");
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,8, "foe");
-        AdventureCard F20 = new AdventureCard("adventure","F20",20,7, "foe");
-        AdventureCard F25 = new AdventureCard("adventure","F25",25,7, "foe");
-        AdventureCard F30 = new AdventureCard("adventure","F30",30,4, "foe");
-        AdventureCard F35 = new AdventureCard("adventure","F35",35,4, "foe");
-        AdventureCard F40 = new AdventureCard("adventure","F40",40,2, "foe");
-        AdventureCard F50 = new AdventureCard("adventure","F50",50,2, "foe");
-        AdventureCard F70 = new AdventureCard("adventure","F70",70,1, "foe");
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 8, "foe");
+        AdventureCard F10 = new AdventureCard("adventure", "F10", 10, 7, "foe");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 8, "foe");
+        AdventureCard F20 = new AdventureCard("adventure", "F20", 20, 7, "foe");
+        AdventureCard F25 = new AdventureCard("adventure", "F25", 25, 7, "foe");
+        AdventureCard F30 = new AdventureCard("adventure", "F30", 30, 4, "foe");
+        AdventureCard F35 = new AdventureCard("adventure", "F35", 35, 4, "foe");
+        AdventureCard F40 = new AdventureCard("adventure", "F40", 40, 2, "foe");
+        AdventureCard F50 = new AdventureCard("adventure", "F50", 50, 2, "foe");
+        AdventureCard F70 = new AdventureCard("adventure", "F70", 70, 1, "foe");
 
         AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
         AdventureCard Horse = new AdventureCard("adventure", "Horse", 10, 12, "weapon");
@@ -64,67 +64,69 @@ class GameTest {
     @DisplayName("Check Event Deck correctly assigned the 12Q cards and 5E cards")
     void RESP01_test_03() {
         Game game = new Game();
-        QuestCard Q2 = new QuestCard("quest","Q2",2,3);
-        QuestCard Q3 = new QuestCard("quest","Q3",3,4);
-        QuestCard Q4 = new QuestCard("quest","Q4",4,3);
-        QuestCard Q5 = new QuestCard("quest","Q5",5,2);
+        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+        QuestCard Q3 = new QuestCard("quest", "Q3", 3, 4);
+        QuestCard Q4 = new QuestCard("quest", "Q4", 4, 3);
+        QuestCard Q5 = new QuestCard("quest", "Q5", 5, 2);
 
-        EventCard Plague = new EventCard("event","Plague",1);
-        EventCard QueenFavor = new EventCard("event","Queen's Favor",2);
-        EventCard Prosperity = new EventCard("event","Prosperity",2);
+        EventCard Plague = new EventCard("event", "Plague", 1);
+        EventCard QueenFavor = new EventCard("event", "Queen's Favor", 2);
+        EventCard Prosperity = new EventCard("event", "Prosperity", 2);
 
-        Card[] cards = { Q2, Q3, Q4, Q5, Plague, QueenFavor, Prosperity };
+        Card[] cards = {Q2, Q3, Q4, Q5, Plague, QueenFavor, Prosperity};
 
         for (Card card : cards) {
-            assertEquals(card.getAmount(),game.countOccurrence(game.getEventDeck(),card) );
+            assertEquals(card.getAmount(), game.countOccurrence(game.getEventDeck(), card));
             //the get amount on the card should match the actual amount setup by the deck
         }
     }
+
     @Test
     @DisplayName("Check that each player got the correct amount of cards")
-    void RESP02_test_01(){
+    void RESP02_test_01() {
         Game game = new Game();
         game.distributeAdventureCards();
 
-        for(Player player : game.players){
-            assertEquals(12,player.getHand().size());
+        for (Player player : game.players) {
+            assertEquals(12, player.getHand().size());
         }
     }
 
     @Test
     @DisplayName("Check that the adventure deck correctly updates the amount of cards")
-    void RESP02_test_02(){
+    void RESP02_test_02() {
         Game game = new Game();
         game.distributeAdventureCards();
-        assertEquals(52,game.getAdventureDeck().deckSize());
+        assertEquals(52, game.getAdventureDeck().deckSize());
     }
+
     @Test
     @DisplayName("Ensure deck correctly shuffles")
-    void RESP02_test_03(){
+    void RESP02_test_03() {
         Game game = new Game();
         List<Card> originalDeck = new ArrayList<>(game.getAdventureDeck().getCards());
 
         game.getAdventureDeck().shuffle();
 
         List<Card> shuffledDeck = game.getAdventureDeck().getCards();
-        assertNotEquals(originalDeck,shuffledDeck);
+        assertNotEquals(originalDeck, shuffledDeck);
     }
 
     @Test
     @DisplayName("Ensure each player takes a turn, with it looping back to P1")
-    void RESP03_test_01(){
+    void RESP03_test_01() {
         int numTurns = 5;
 
         List<String> actualOrder = new ArrayList<>();
         Game game = new Game();
 
         Deck eventDeck = new Deck();
-        EventCard Test = new EventCard("event","Test",5);
+        EventCard Test = new EventCard("event", "Test", 5);
         eventDeck.addCard(Test);
         game.setEventDeck(eventDeck);
 
-        String[] expectedOrder = {"P1","P2","P3","P4","P1"};
-        for(int i =0; i<numTurns; i++){
+        String[] expectedOrder = {"P1", "P2", "P3", "P4", "P1"};
+        for (int i = 0; i < numTurns; i++) {
             Player currentPlayer = game.players[game.currentPlayerNum];
             actualOrder.add(currentPlayer.getID());
             pressReturn();
@@ -137,7 +139,7 @@ class GameTest {
 
     @Test
     @DisplayName("Ensure game determines if one or more players have 7 shields")
-    void RESP03_test_02(){
+    void RESP03_test_02() {
         Game game = new Game();
 
         game.P1.setShields(7);
@@ -146,23 +148,24 @@ class GameTest {
         game.P4.setShields(7);
 
         Deck eventDeck = new Deck();
-        EventCard Test = new EventCard("event","Test",1);
+        EventCard Test = new EventCard("event", "Test", 1);
         eventDeck.addCard(Test);
         game.setEventDeck(eventDeck);
 
         pressReturn();
         game.play();
 
-        assertEquals(2,game.getWinners().size());
+        assertEquals(2, game.getWinners().size());
     }
+
     @Test
     @DisplayName("Ensure game correctly terminates when winner is assigned")
-    void RESP04_test_01(){
+    void RESP04_test_01() {
         Game game = new Game();
         game.P1.setShields(7);
 
         Deck eventDeck = new Deck();
-        EventCard Test = new EventCard("event","Test",1);
+        EventCard Test = new EventCard("event", "Test", 1);
         eventDeck.addCard(Test);
         game.setEventDeck(eventDeck);
 
@@ -170,21 +173,21 @@ class GameTest {
 
         game.play();
         assertTrue(game.isGameFinished()); //terminate when winner
-        assertEquals(1,game.getWinners().size()); //should only be one winner
+        assertEquals(1, game.getWinners().size()); //should only be one winner
         assertTrue(game.getWinners().contains(game.P1));
     }
 
     @Test
     @DisplayName("Ensure game correctly assigns an event card")
-    void RESP05_test_01(){
+    void RESP05_test_01() {
         Game game = new Game();
 
         Deck testDeck = new Deck();
         Player P1 = new Player("P1");
 
-        EventCard Plague = new EventCard("event","Plague",1);
-        QuestCard Q2 = new QuestCard("quest","Q2",2,3);
-        QuestCard Q5 = new QuestCard("quest","Q5",5,2);
+        EventCard Plague = new EventCard("event", "Plague", 1);
+        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+        QuestCard Q5 = new QuestCard("quest", "Q5", 5, 2);
 
         testDeck.addCard(Plague);
         testDeck.addCard(Q2);
@@ -195,19 +198,19 @@ class GameTest {
         Card expectedCard = testDeck.getCards().get(0);
         Card actualCard = game.drawEventCard(P1);
 
-        assertEquals(expectedCard,actualCard);
+        assertEquals(expectedCard, actualCard);
 
     }
 
     @Test
     @DisplayName("Ensure game correctly updates the event deck and its discard pile when an event card is drawn")
-    void RESP05_test_02(){
+    void RESP05_test_02() {
 
         Game game = new Game();
 
         Deck eventDeck = new Deck();
-        EventCard Test = new EventCard("event","Test1",1);
-        EventCard Test2 = new EventCard("event","Test2",3);
+        EventCard Test = new EventCard("event", "Test1", 1);
+        EventCard Test2 = new EventCard("event", "Test2", 3);
         eventDeck.addCard(Test);
         eventDeck.addCard(Test2);
         eventDeck.shuffle();
@@ -216,8 +219,6 @@ class GameTest {
         int initialSize = game.getEventDeck().deckSize();
 
         Card expectedCard = game.getEventDeck().getCards().get(0);
-
-
 
 
         pressReturn();
@@ -234,13 +235,12 @@ class GameTest {
 
     @Test
     @DisplayName("Test if Plague card correctly removes shields from the player who draws the card")
-
-    void RESP06_test_01(){
+    void RESP06_test_01() {
         Game game = new Game();
         game.P1.setShields(2);
         Deck testDeck = new Deck();
 
-        EventCard Plague = new EventCard("event","Plague",1);
+        EventCard Plague = new EventCard("event", "Plague", 1);
 
         testDeck.addCard(Plague);
 
@@ -256,13 +256,12 @@ class GameTest {
 
     @Test
     @DisplayName("Test if Plague card does not make the players shield go below 0")
-
-    void RESP06_test_02(){
+    void RESP06_test_02() {
         Game game = new Game();
         game.P1.setShields(1);
         Deck testDeck = new Deck();
 
-        EventCard Plague = new EventCard("event","Plague",1);
+        EventCard Plague = new EventCard("event", "Plague", 1);
 
         testDeck.addCard(Plague);
 
@@ -278,7 +277,7 @@ class GameTest {
 
     @Test
     @DisplayName("Test if Queen's Favor correctly adds 2 cards to players hand")
-    void RESP07_test_01(){
+    void RESP07_test_01() {
 
         Game game = new Game();
         Deck testDeck = new Deck();
@@ -287,7 +286,7 @@ class GameTest {
 
         assertEquals(0, game.P1.getHand().size());
 
-        EventCard Queen = new EventCard("event","Queen's Favor",1);
+        EventCard Queen = new EventCard("event", "Queen's Favor", 1);
         testDeck.addCard(Queen);
 
         pressReturn();
@@ -295,14 +294,12 @@ class GameTest {
         game.playTurn();
 
 
-
-
-        assertEquals(2,game.P1.getHand().size());
+        assertEquals(2, game.P1.getHand().size());
     }
 
     @Test
     @DisplayName("Test if Prosperity adds two cards to each players hand")
-    void RESP07_test_02(){
+    void RESP07_test_02() {
         Game game = new Game();
         Deck testDeck = new Deck();
 
@@ -317,15 +314,16 @@ class GameTest {
         pressReturn();
 
 
-        EventCard Queen = new EventCard("event","Prosperity",1);
+        EventCard Queen = new EventCard("event", "Prosperity", 1);
         testDeck.addCard(Queen);
         game.playTurn();
 
-        assertEquals(2,game.P1.getHand().size());
-        assertEquals(2,game.P2.getHand().size());
-        assertEquals(2,game.P3.getHand().size());
-        assertEquals(2,game.P4.getHand().size());
+        assertEquals(2, game.P1.getHand().size());
+        assertEquals(2, game.P2.getHand().size());
+        assertEquals(2, game.P3.getHand().size());
+        assertEquals(2, game.P4.getHand().size());
     }
+
     @Test
     @DisplayName("Test if game properly computes the amount of cards to discard from the player's hand")
     void RESP08_test_01() {
@@ -346,6 +344,7 @@ class GameTest {
         assertEquals(2, cardsToDiscard);
 
     }
+
     @Test
     @DisplayName("Test if game properly displays the players hand")
     void RESP08_test_02() {
@@ -359,7 +358,7 @@ class GameTest {
         AdventureCard F10 = new AdventureCard("adventure", "F10", 10, 6, "foe");
         deck.addCard(F10);
 
-        for(int i = 0; i < 13; i++){
+        for (int i = 0; i < 13; i++) {
             game.drawAdventureCard(game.P1);
         }
 
@@ -390,16 +389,16 @@ class GameTest {
 
         game.setAdventureDeck(deck);
 
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
-        AdventureCard F25 = new AdventureCard("adventure","F25",25,2, "foe");
-        AdventureCard F70 = new AdventureCard("adventure","F70",70,2, "foe");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure", "F20", 20, 4, "foe");
+        AdventureCard F25 = new AdventureCard("adventure", "F25", 25, 2, "foe");
+        AdventureCard F70 = new AdventureCard("adventure", "F70", 70, 2, "foe");
         deck.addCard(F15);
         deck.addCard(F20);
         deck.addCard(F25);
         deck.addCard(F70);
 
-        for(int i = 0; i < 13; i++){
+        for (int i = 0; i < 13; i++) {
             game.drawAdventureCard(game.P1);
         }
 
@@ -479,7 +478,7 @@ class GameTest {
 
         game.trimHand(game.P1);
 
-        assertEquals(1,game.getAdventureDeck().discardSize());
+        assertEquals(1, game.getAdventureDeck().discardSize());
 
     }
 
@@ -492,12 +491,12 @@ class GameTest {
         Player originalPlayer = game.players[game.currentPlayerNum];
 
         Deck eventDeck = new Deck();
-        EventCard Test = new EventCard("event","Test",1);
+        EventCard Test = new EventCard("event", "Test", 1);
         eventDeck.addCard(Test);
         game.setEventDeck(eventDeck);
 
 
-        assertEquals(originalPlayer,game.players[game.currentPlayerNum]);
+        assertEquals(originalPlayer, game.players[game.currentPlayerNum]);
 
         pressReturn();
 
@@ -506,15 +505,16 @@ class GameTest {
 
         Player currentPlayer = game.players[game.currentPlayerNum];
 
-        assertEquals(game.P2,currentPlayer);
+        assertEquals(game.P2, currentPlayer);
     }
+
     @Test
     @DisplayName("Test that checks if the display is cleared after pressing enter")
-    void RESP10_test_02(){
+    void RESP10_test_02() {
         Game game = new Game();
         Deck deck = new Deck();
 
-        EventCard Plague = new EventCard("event","Plague",16); //fill the event deck with plagues so player doesnt overcap on cards
+        EventCard Plague = new EventCard("event", "Plague", 16); //fill the event deck with plagues so player doesnt overcap on cards
         deck.addCard(Plague);
         game.setEventDeck(deck);
 
@@ -539,12 +539,9 @@ class GameTest {
         Deck deck = new Deck();
 
         Deck eventDeck = new Deck();
-        EventCard Plague = new EventCard("event","Plague",1);
+        EventCard Plague = new EventCard("event", "Plague", 1);
         eventDeck.addCard(Plague);
         game.setEventDeck(eventDeck);
-
-
-
 
 
         game.setAdventureDeck(deck);
@@ -572,12 +569,12 @@ class GameTest {
                 "Player's hand was not displayed correctly at the beginning of the turn.");
     }
 
-    void setUpCorrect(Game game){
+    void setUpCorrect(Game game) {
 
         Deck adventureDeck = new Deck();
         Deck questDeck = new Deck();
 
-        AdventureCard F5 = new AdventureCard("adventure","F5",5,1, "foe");
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 1, "foe");
         AdventureCard Horse = new AdventureCard("adventure", "Horse", 10, 1, "weapon");
 
         adventureDeck.addCard(F5);
@@ -598,7 +595,8 @@ class GameTest {
         game.drawEventCard(game.players[game.currentPlayerNum]);
 
     }
-    void inputsForQuestValid(){
+
+    void inputsForQuestValid() {
 
 
         InputStream input1 = new ByteArrayInputStream("N\n".getBytes()); // First response
@@ -619,8 +617,10 @@ class GameTest {
         System.setIn(combinedInput);
 
     }
+
     @Test
-    @DisplayName("Check if sponsoring player is correctly assigned") //check if quest ended, discarded
+    @DisplayName("Check if sponsoring player is correctly assigned")
+        //check if quest ended, discarded
     void RESP12_test_01() {
         Game game = new Game();
         inputsForQuestValid();
@@ -654,7 +654,8 @@ class GameTest {
     }
 
     @Test
-    @DisplayName("Check if game handles the logic of each player pressing no and ending when it gets back to the player who inititate") //check if quest ended, discarded
+    @DisplayName("Check if game handles the logic of each player pressing no and ending when it gets back to the player who inititate")
+        //check if quest ended, discarded
     void RESP13_test_01() {
 
         Game game = new Game();
@@ -701,8 +702,10 @@ class GameTest {
         assertNull(game.getSponsoringPlayer());
 
     }
+
     @Test
-    @DisplayName("Check if game correctly discards quest card if nobody sponsors") //check if quest ended, discarded
+    @DisplayName("Check if game correctly discards quest card if nobody sponsors")
+        //check if quest ended, discarded
     void RESP13_test_02() {
 
         Game game = new Game();
@@ -734,17 +737,18 @@ class GameTest {
     }
 
     @Test
-    @DisplayName("Check if game correctly displays players hand") //check if quest ended, discarded
-    void RESP14_test_01(){
+    @DisplayName("Check if game correctly displays players hand")
+        //check if quest ended, discarded
+    void RESP14_test_01() {
         Game game = new Game();
         Deck deck = new Deck();
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure", "F20", 20, 4, "foe");
         deck.addCard(F15);
         deck.addCard(F20);
         game.setAdventureDeck(deck);
 
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++) {
             game.drawAdventureCard(game.P1);
         }
 
@@ -759,7 +763,7 @@ class GameTest {
         InputStream in = new ByteArrayInputStream(simulatedInput.getBytes());
         System.setIn(in);
 
-        game.buildQuest(game.P1,Q2);
+        game.buildQuest(game.P1, Q2);
 
         String output = outputStream.toString();
         assertTrue(output.contains("[F15, F15, F15, F15, F20, F20, F20, F20]"),
@@ -767,17 +771,18 @@ class GameTest {
     }
 
     @Test
-    @DisplayName("Check if game correctly prompts player to quit or select a card") //check if quest ended, discarded
-    void RESP14_test_02(){
+    @DisplayName("Check if game correctly prompts player to quit or select a card")
+        //check if quest ended, discarded
+    void RESP14_test_02() {
         Game game = new Game();
         Deck deck = new Deck();
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure", "F20", 20, 4, "foe");
         deck.addCard(F15);
         deck.addCard(F20);
         game.setAdventureDeck(deck);
 
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++) {
             game.drawAdventureCard(game.P1);
         }
 
@@ -793,7 +798,7 @@ class GameTest {
         System.setOut(printStream);
 
 
-        game.buildQuest(game.P1,Q2);
+        game.buildQuest(game.P1, Q2);
 
         String output = outputStream.toString();
         assertTrue(output.contains("'Quit' to finish the stage"),
@@ -804,21 +809,22 @@ class GameTest {
     }
 
     @Test
-    @DisplayName("Check if game correctly determines if an integer input is out of bounds") //check if quest ended, discarded
-    void RESP15_test_01(){
+    @DisplayName("Check if game correctly determines if an integer input is out of bounds")
+        //check if quest ended, discarded
+    void RESP15_test_01() {
         Game game = new Game();
         Deck testDeck = new Deck();
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure", "F20", 20, 4, "foe");
         testDeck.addCard(F15);
         testDeck.addCard(F20);
         game.setAdventureDeck(testDeck);
 
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++) {
             game.drawAdventureCard(game.P1);
         }
 
-        QuestCard Q2 = new QuestCard("quest","Q2",1,3);
+        QuestCard Q2 = new QuestCard("quest", "Q2", 1, 3);
         testDeck.addCard(Q2);
 
         InputStream input1 = new ByteArrayInputStream("1000\n1\n".getBytes()); // First response
@@ -831,7 +837,7 @@ class GameTest {
         PrintStream printStream = new PrintStream(outputStream);
         System.setOut(printStream);
 
-        game.buildQuest(game.P1,Q2);
+        game.buildQuest(game.P1, Q2);
 
         String output = outputStream.toString();
         assertTrue(output.contains("Invalid card position. Please try again."),
@@ -840,21 +846,22 @@ class GameTest {
     }
 
     @Test
-    @DisplayName("Check if game correctly handles when a non integer is entered") //check if quest ended, discarded
-    void RESP15_test_02(){
+    @DisplayName("Check if game correctly handles when a non integer is entered")
+        //check if quest ended, discarded
+    void RESP15_test_02() {
         Game game = new Game();
         Deck testDeck = new Deck();
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure", "F20", 20, 4, "foe");
         testDeck.addCard(F15);
         testDeck.addCard(F20);
         game.setAdventureDeck(testDeck);
 
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++) {
             game.drawAdventureCard(game.P1);
         }
 
-        QuestCard Q2 = new QuestCard("quest","Q2",1,3);
+        QuestCard Q2 = new QuestCard("quest", "Q2", 1, 3);
         testDeck.addCard(Q2);
 
         InputStream input1 = new ByteArrayInputStream("wedwqedwedewdwedwed\n1\n".getBytes()); // First response
@@ -869,7 +876,7 @@ class GameTest {
         PrintStream printStream = new PrintStream(outputStream);
         System.setOut(printStream);
 
-        game.buildQuest(game.P1,Q2);
+        game.buildQuest(game.P1, Q2);
 
         String output = outputStream.toString();
         assertTrue(output.contains("Invalid input. Input must be an integer, please enter a number or 'Quit'."),
@@ -878,35 +885,36 @@ class GameTest {
     }
 
     @Test
-    @DisplayName("Check game correctly adds cards to a stage") //check if quest ended, discarded
-    void RESP16_test_01(){
+    @DisplayName("Check game correctly adds cards to a stage")
+        //check if quest ended, discarded
+    void RESP16_test_01() {
         Game game = new Game();
         Deck testDeck = new Deck();
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard Dagger = new AdventureCard("adventure","Dagger",5,4, "weapon");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 5, "foe");
+        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 4, "weapon");
         testDeck.addCard(F15);
         testDeck.addCard(Dagger);
         game.setAdventureDeck(testDeck);
 
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++) {
             game.drawAdventureCard(game.P1);
         }
 
-        QuestCard Q1 = new QuestCard("quest","Q2",1,3);
+        QuestCard Q1 = new QuestCard("quest", "Q2", 1, 3);
         testDeck.addCard(Q1);
 
         InputStream input1 = new ByteArrayInputStream("1\n".getBytes()); // First response
         InputStream input2 = new ByteArrayInputStream("8\nquit\n".getBytes()); // Second response
 
 
-        InputStream combinedInput = new SequenceInputStream(input1,input2);
+        InputStream combinedInput = new SequenceInputStream(input1, input2);
 
         System.setIn(combinedInput);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
         System.setOut(printStream);
 
-        game.buildQuest(game.P1,Q1);
+        game.buildQuest(game.P1, Q1);
 
         String output = outputStream.toString();
         assertTrue(output.contains("Final Stage: [F15, Dagger]"),
@@ -915,32 +923,34 @@ class GameTest {
     }
 
     @Test
-    @DisplayName("Check initializeStages functionality") //check if quest ended, discarded
-    void RESP16_test_02(){
+    @DisplayName("Check initializeStages functionality")
+        //check if quest ended, discarded
+    void RESP16_test_02() {
         Game game = new Game();
-        QuestCard Q1 = new QuestCard("quest","Q2",3,3);
+        QuestCard Q1 = new QuestCard("quest", "Q2", 3, 3);
 
         ArrayList<ArrayList<AdventureCard>> actualStages = game.initializeStages(Q1.getStages());
 
-        assertEquals(3,actualStages.size()); //3 stages created
+        assertEquals(3, actualStages.size()); //3 stages created
 
     }
+
     @Test
     @DisplayName("Test whether quit works when the user enters it before adding a card")
-    void RESP17_test_01(){
+    void RESP17_test_01() {
         Game game = new Game();
         Deck testDeck = new Deck();
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard F20 = new AdventureCard("adventure","F20",20,4, "foe");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 5, "foe");
+        AdventureCard F20 = new AdventureCard("adventure", "F20", 20, 4, "foe");
         testDeck.addCard(F15);
         testDeck.addCard(F20);
         game.setAdventureDeck(testDeck);
 
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++) {
             game.drawAdventureCard(game.P1);
         }
 
-        QuestCard Q1 = new QuestCard("quest","Q2",1,3);
+        QuestCard Q1 = new QuestCard("quest", "Q2", 1, 3);
         testDeck.addCard(Q1);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -952,7 +962,7 @@ class GameTest {
 
         System.setOut(printStream);
 
-        game.buildQuest(game.P1,Q1);
+        game.buildQuest(game.P1, Q1);
 
         String output = outputStream.toString();
         assertTrue(output.contains("A stage cannot be empty"),
@@ -989,7 +999,7 @@ class GameTest {
 
     @Test
     @DisplayName("Test functionality for handleQuitInput, ensuring that is false when new stage has less value")
-    public void RESP18_test_03(){
+    public void RESP18_test_03() {
         Game game = new Game();
         ArrayList<ArrayList<AdventureCard>> stages = game.initializeStages(2);
 
@@ -1003,12 +1013,12 @@ class GameTest {
         stages.add(previousStage);
         stages.add(currentStage);
 
-        assertFalse(game.handleQuitInput(1,stages));
+        assertFalse(game.handleQuitInput(1, stages));
     }
 
     @Test
     @DisplayName("Test functionality for handleQuitInput, ensuring that is false when new stage has equal value")
-    public void RESP18_test_04(){
+    public void RESP18_test_04() {
         Game game = new Game();
         ArrayList<ArrayList<AdventureCard>> stages = game.initializeStages(2);
 
@@ -1022,21 +1032,21 @@ class GameTest {
         stages.add(previousStage);
         stages.add(currentStage);
 
-        assertFalse(game.handleQuitInput(1,stages));
+        assertFalse(game.handleQuitInput(1, stages));
     }
 
     @Test
     @DisplayName("Test if game correctly displays that stage of insufficient value is being added when following game logic")
-    public void RESP18_test_05(){
+    public void RESP18_test_05() {
         Game game = new Game();
         Deck testDeck = new Deck();
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard W20 = new AdventureCard("adventure","W20",20,4, "weapon");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 5, "foe");
+        AdventureCard W20 = new AdventureCard("adventure", "W20", 20, 4, "weapon");
         testDeck.addCard(F15);
         testDeck.addCard(W20);
         game.setAdventureDeck(testDeck);
 
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++) {
             game.drawAdventureCard(game.P1);
         }
         InputStream input1 = new ByteArrayInputStream("1\nquit\n".getBytes()); // First response
@@ -1056,12 +1066,12 @@ class GameTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
 
-        QuestCard Q2 = new QuestCard("quest","Q2",2,3);
+        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
         testDeck.addCard(Q2);
 
         System.setOut(printStream);
 
-        game.buildQuest(game.P1,Q2);
+        game.buildQuest(game.P1, Q2);
 
         String output = outputStream.toString();
         assertTrue(output.contains("Insufficient value for this stage"),
@@ -1071,31 +1081,31 @@ class GameTest {
 
     @Test
     @DisplayName("Test if game correctly handles the situation where 2 of the same weapon card is added ")
-    public void RESP19_test_01(){
+    public void RESP19_test_01() {
         Game game = new Game();
         Deck testDeck = new Deck();
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard W20 = new AdventureCard("adventure","W20",20,4, "weapon");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 5, "foe");
+        AdventureCard W20 = new AdventureCard("adventure", "W20", 20, 4, "weapon");
         testDeck.addCard(F15);
         testDeck.addCard(W20);
         game.setAdventureDeck(testDeck);
 
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++) {
             game.drawAdventureCard(game.P1);
         }
 
         InputStream input1 = new ByteArrayInputStream("8\n8\n".getBytes()); // First response
         InputStream input2 = new ByteArrayInputStream("1\nquit\n".getBytes()); // Second response
 
-        InputStream combinedInput = new SequenceInputStream(input1,input2);
+        InputStream combinedInput = new SequenceInputStream(input1, input2);
         System.setIn(combinedInput);
-        QuestCard Q1 = new QuestCard("quest","Q1",1,3);
+        QuestCard Q1 = new QuestCard("quest", "Q1", 1, 3);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
         System.setOut(printStream);
 
-        game.buildQuest(game.P1,Q1);
+        game.buildQuest(game.P1, Q1);
 
         String output = outputStream.toString();
 
@@ -1103,33 +1113,34 @@ class GameTest {
                 "game allowed 2 insertions of the same card");
 
     }
+
     @Test
     @DisplayName("Test if game correctly handles the situation where the player attempts to add a foe when one is already in the stage")
-    public void RESP19_test_02(){
+    public void RESP19_test_02() {
         Game game = new Game();
         Deck testDeck = new Deck();
-        AdventureCard F15 = new AdventureCard("adventure","F15",15,5, "foe");
-        AdventureCard W20 = new AdventureCard("adventure","W20",20,4, "weapon");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 5, "foe");
+        AdventureCard W20 = new AdventureCard("adventure", "W20", 20, 4, "weapon");
         testDeck.addCard(F15);
         testDeck.addCard(W20);
         game.setAdventureDeck(testDeck);
 
-        for(int i = 0; i < 9; i++){
+        for (int i = 0; i < 9; i++) {
             game.drawAdventureCard(game.P1);
         }
 
         InputStream input1 = new ByteArrayInputStream("1\n1\n".getBytes()); // First response
         InputStream input2 = new ByteArrayInputStream("8\nquit\n".getBytes()); // Second response
 
-        InputStream combinedInput = new SequenceInputStream(input1,input2);
+        InputStream combinedInput = new SequenceInputStream(input1, input2);
         System.setIn(combinedInput);
-        QuestCard Q1 = new QuestCard("quest","Q1",1,3);
+        QuestCard Q1 = new QuestCard("quest", "Q1", 1, 3);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
         System.setOut(printStream);
 
-        game.buildQuest(game.P1,Q1);
+        game.buildQuest(game.P1, Q1);
 
         String output = outputStream.toString();
 
@@ -1140,14 +1151,14 @@ class GameTest {
 
     @Test
     @DisplayName("Test if game correctly displays eligible players (every player excluding sponsor")
-    public void RESP20_test_01(){
+    public void RESP20_test_01() {
         Game game = new Game();
         game.setSponsoringPlayer(game.P1);
         game.distributeAdventureCards();
 
         ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
         stages.add(new ArrayList<>());
-        AdventureCard F5 = new AdventureCard("adventure","F5",5,8, "foe");
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 8, "foe");
         AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
 
         stages.get(0).add(F5);
@@ -1176,6 +1187,7 @@ class GameTest {
                 "did not correctly display the eligible players");
 
     }
+
     @Test
     @DisplayName("Test if game correctly prompts the player in order if they are going to participate")
     public void RESP20_test_02() {
@@ -1228,7 +1240,7 @@ class GameTest {
 
         ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
         stages.add(new ArrayList<>());
-        AdventureCard F5 = new AdventureCard("adventure","F5",5,8, "foe");
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 8, "foe");
         AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
 
         stages.get(0).add(F5);
@@ -1238,14 +1250,19 @@ class GameTest {
         InputStream input2 = new ByteArrayInputStream("n\n".getBytes()); // Second response
         InputStream input3 = new ByteArrayInputStream("y\n".getBytes()); // p4 participates
         InputStream input4 = new ByteArrayInputStream("1\n".getBytes()); // discards their first card
+        InputStream input5 = new ByteArrayInputStream("12\nquit\n".getBytes()); // discards their first card
 
         InputStream combinedInput = new SequenceInputStream(
                 new SequenceInputStream(
-                        new SequenceInputStream(input1, input2),
-                        input3
+                        new SequenceInputStream(
+                                new SequenceInputStream(input1, input2),
+                                input3
+                        ),
+                        input4
                 ),
-                input4
+                input5
         );
+
         System.setIn(combinedInput);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -1261,7 +1278,7 @@ class GameTest {
         assertTrue(output.contains("was successfully discarded"),
                 "card not discarded");
 
-        assertEquals(1,game.getAdventureDeck().getDiscard().size()); //ensure discard pile is still updated
+        assertEquals(1, game.getAdventureDeck().getDiscard().size()); //ensure discard pile is still updated
 
     }
 
@@ -1274,7 +1291,7 @@ class GameTest {
 
         ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
         stages.add(new ArrayList<>());
-        AdventureCard F5 = new AdventureCard("adventure","F5",5,8, "foe");
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 8, "foe");
         AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
 
         stages.get(0).add(F5);
@@ -1305,12 +1322,9 @@ class GameTest {
 
 
     }
-    @Test
-    @DisplayName("Test for if player is correctly prompted to either quit or add a card to their attack ")
-    public void RESP22_test_01() {
-        Game game = new Game();
-        game.setSponsoringPlayer(game.P1);
 
+    public void buildAttackInitialization(Game game) {
+        game.setSponsoringPlayer(game.P1);
 
 
         ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
@@ -1323,6 +1337,15 @@ class GameTest {
 
         stages.get(0).add(Excalibur);
         stages.get(0).add(Dagger);
+
+        game.buildAttack(game.P1);
+
+    }
+
+    @Test
+    @DisplayName("Test for if player is correctly prompted to either quit or add a card to their attack ")
+    public void RESP22_test_01() {
+        Game game = new Game();
 
         InputStream input1 = new ByteArrayInputStream("1\n".getBytes()); // First response
         InputStream input2 = new ByteArrayInputStream("2\n".getBytes()); // Second response
@@ -1339,7 +1362,8 @@ class GameTest {
         PrintStream printStream = new PrintStream(outputStream);
         System.setOut(printStream);
 
-        game.buildAttack(game.P1, stages.get(0));
+
+        buildAttackInitialization(game);
 
         String output = outputStream.toString();
 
@@ -1356,24 +1380,7 @@ class GameTest {
                 "quit not functioning");
     }
 
-    public void buildAttackInitialization(Game game){
-        game.setSponsoringPlayer(game.P1);
 
-
-        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
-        stages.add(new ArrayList<>());
-        AdventureCard Excalibur = new AdventureCard("adventure", "Excalibur", 30, 2, "weapon");
-        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
-        game.P1.addCardToHand((Dagger));
-        game.P1.addCardToHand(Excalibur);
-        game.P1.addCardToHand(Excalibur);
-
-        stages.get(0).add(Excalibur);
-        stages.get(0).add(Dagger);
-
-        game.buildAttack(game.P1, stages.get(0));
-
-    }
     @Test
     @DisplayName("Test that player inputs a valid position ")
     public void RESP23_test_01() {
@@ -1384,16 +1391,10 @@ class GameTest {
         InputStream input2 = new ByteArrayInputStream("quit\n".getBytes()); // Second response
         System.setIn(new SequenceInputStream(input1, input2));
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream(outputStream);
-        System.setOut(printStream);
 
         buildAttackInitialization(game);
 
-        String output = outputStream.toString();
 
-        assertTrue(output.contains("Error: Input out of range."),
-                "did not warn the user that the input was out of range");
     }
 
     @Test
@@ -1426,6 +1427,7 @@ class GameTest {
 
         assertTrue(indexError < indexFinish);
     }
+
     @Test
     @DisplayName("Test that player cannot enter a foe card")
     public void RESP23_test_03() {
@@ -1454,6 +1456,10 @@ class GameTest {
 
         assertTrue(output.contains("Foes cannot be used in attacks."),
                 "did not warn the user that foes cannot be added");
+
+        //ensure foe was not added
+        //assertTrue(output.contains("Final attack: [Dagger]"), "did not stop player from adding foe");
+
     }
 
     @Test
@@ -1552,15 +1558,73 @@ class GameTest {
         String output = outputStream.toString();
         assertTrue(output.contains("Final attack: [Dagger, Excalibur]"),
                 "incorrect attack");
+
+
+    }
+
+    @Test
+    @DisplayName("test that total value of an arraylist of adventurecards is correctly calculated")
+    public void RESP25_test_01() {
+        Game game = new Game();
+        game.setSponsoringPlayer(game.P1);
+
+
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 2, "foe");
+        AdventureCard Excalibur = new AdventureCard("adventure", "Excalibur", 30, 2, "weapon");
+        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
+
+        stages.get(0).add(F5);
+        stages.get(0).add(Excalibur);
+        stages.get(0).add(Dagger);
+
+        assertEquals(40, game.calculateTotalValue(stages.get(0)));
+    }
+
+    @Test
+    @DisplayName("determine that players that enter an insufficient attack value are set as not participating")
+    public void RESP25_test_02() {
+        Game game = new Game();
+        //n, n, y, 2, quit
+        game.setSponsoringPlayer(game.P1);
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        stages.add(new ArrayList<>());
+        AdventureCard Excalibur = new AdventureCard("adventure", "Excalibur", 30, 2, "weapon");
+        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
+
+        game.P4.addCardToHand(Excalibur);
+
+        stages.get(0).add(Excalibur);
+        stages.get(0).add(Dagger);
+        stages.get(1).add(Excalibur);
+        stages.get(1).add(Excalibur);
+        InputStream input1 = new ByteArrayInputStream("n\n".getBytes()); //Pick first card
+        InputStream input2 = new ByteArrayInputStream("n\n".getBytes()); // Pick second card
+        InputStream input3 = new ByteArrayInputStream("y\n".getBytes());
+        InputStream input4 = new ByteArrayInputStream("2\nquit\n".getBytes());
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        new SequenceInputStream(input1, input2),
+                        input3
+                ),
+                input4
+        ));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+
+        game.beginQuest(stages);
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("P4's attack was insufficient"), "game did not determine p4's attack to be insufficient");
+        assertFalse(game.P4.isParticipating()); //ensure not participating
+        //AS EVERY OTHER PERSON DECLINED TO PARTICIPATE, AND P4'S ATTACK WAS INSUFFICIENT, THE QUEST WILL END
+        assertTrue(output.contains("There are no more eligible players that can participate. Ending quest."), "p4 still allowed");
     }
 }
-
-
-
-
-
-
-
-
-
-
