@@ -1939,4 +1939,240 @@ class GameTest {
 
         assertEquals(12,game.P1.getHand().size()); //hand should be 6, quest is built with 4 cards and there are 2 stages
     }
+    @Test
+    public void A_TEST_JP_scenario(){
+        Game game = new Game();
+
+        Deck testDeck = new Deck();
+        Deck eventDeck = new Deck();
+        QuestCard Q4 = new QuestCard("quest", "Q4", 4, 3);
+        eventDeck.addCard(Q4); //THIS IS THE ONLY EVENT CARD USED IN THE A-TEST, SO THIS IS OUR DECK, IT DOESNT MATTER
+        game.setEventDeck(eventDeck);
+
+        //Manipulate the deck to draw the expected cards in order
+
+        AdventureCard F30 = new AdventureCard("adventure", "F30", 30, 1, "foe");
+        testDeck.addCard(F30);
+        AdventureCard Sword = new AdventureCard("adventure", "Sword", 10, 1, "weapon");
+        testDeck.addCard(Sword);
+        AdventureCard BattleAxe = new AdventureCard("adventure", "Battle Axe", 15, 1, "weapon");
+        testDeck.addCard(BattleAxe);
+        AdventureCard F10 = new AdventureCard("adventure", "F10", 10, 1, "foe");
+        testDeck.addCard(F10);
+        AdventureCard Lance = new AdventureCard("adventure", "Lance", 20, 1, "weapon");
+        testDeck.addCard(Lance);
+        testDeck.addCard(Lance);
+        testDeck.addCard(BattleAxe);
+        testDeck.addCard(Sword);
+        testDeck.addCard(F30);
+        testDeck.addCard(Lance);
+
+        game.distributeAdventureCards(); //all players now have a randomized hand
+        //add two lists
+
+
+
+        // Create a new Deck for the combined deck
+        Deck newDeck = new Deck();
+
+        // Add cards from testDeck
+        for (Card card : testDeck.getCards()) {
+            newDeck.addCard(card);
+        }
+
+        // Add cards from the adventure deck
+        for (Card card : game.getAdventureDeck().getCards()) {
+            newDeck.addCard(card);
+        }
+
+        // Assuming you have a method to set the adventure deck in the Game class
+        game.setAdventureDeck(newDeck);
+
+        // Print out the cards in the new deck to verify
+        System.out.println("Combined Deck: " + newDeck.getCards());
+
+        initializePlayerHand(game);
+
+        List<String> inputs = List.of(
+                "n\n", //player 1 declines sponsor
+                "y\n",  //player 2 accepts sponsor
+                "1\n",   //player 2 chooses F5 to add to first stage
+                "7\n", //player 2 adds horse to first stage
+                "quit\n", //complete stage building
+                "2\n",   //add F15 stage 2
+                "5\n",  //add Sword stage 2
+                "quit\n",  //finish building stage 2
+                "2\n", //add F15 to stage 3
+                "3\n",  //add dagger to stage 3
+                "4\n",  //add battle axe to stage 3
+                "quit\n", //finish building stage 3
+                "2\n",  //add F40 to stage 4
+                "3\n", //add battle axe to stage 4
+                "quit\n", //finish building stage 4
+                "y\n", //player 1 decides to participate
+                "1\n",  //discard F5
+                "y\n", //player 3 decided to participate
+                "1\n", //player 3 discards F5
+                "y\n", //player 4 decides to participate
+                "1\n",  //player 4 discards F5
+                "5\n", //player 1 chooses a Dagger
+                "5\n", //player 1 chooses a Sword
+                "quit\n", //player 1 finishes attack, value 15
+                "5\n", //P3 chooses a sword
+                "4\n", //P3 chooses a Dagger
+                "quit\n", //P3 completes attack
+                "4\n", //P4 adds dagger
+                "6\n", //P4 adds horse
+                "quit\n", //P4 finishes attack
+                "y\n", //P1 participates
+                "y\n", //P3 participates
+                "y\n",  //P4 participates
+                "7\n", //P1 chooses horse
+                "6\n",  //P1 chooses sword
+                "quit\n", //P1 finishing building attack
+                "9\n", //P3 chooses axe
+                "4\n", //P3 chooses sword
+                "quit\n", //P3 completes attack
+                "6\n", //P4 chooses horse
+                "6\n", // p4 chooses axe
+                "quit\n", //p4 enters selection
+                "y\n", //both players participate
+                "y\n",
+                "10\n", //lance
+                "6\n", //horse
+                "4\n", //sword
+                "quit\n",
+                "7\n", // axe
+                "5\n", //sword
+                "6\n", //lance
+                "quit\n",
+                "y\n", //both participate
+                "y\n",
+                "7\n", //axe
+                "6\n", //horse
+                "6\n", //Lance
+                "quit\n",
+                "4\n", //dagger
+                "4\n", //sword
+                "4\n", //lance
+                "5\n", //excalibur
+                "quit\n",
+                "1\n",
+                "1\n",
+                "1\n",
+                "1\n"
+        );
+
+
+        InputStream inputStream = createInputStreamFromList(inputs);
+        System.setIn(inputStream);
+
+        game.drawEventCard(game.players[game.currentPlayerNum]);
+        game.beginQuest(game.gameStages);
+
+        System.out.println(game.P4.getHand());
+
+        assertTrue(game.P1.getHand().toString().contains("[F5, F10, F15, F15, F30, Horse, Battle Axe, Battle Axe, Lance]"), "P1 hand incorrectly displayed");
+        assertEquals(0, game.P1.getShields());
+
+        assertEquals(0, game.P3.getShields());
+        assertTrue(game.P3.getHand().toString().contains("[F5, F5, F15, F30, Sword]"), "P3 hand incorrectly displayer");
+
+        assertEquals(4,game.P4.getShields());
+        assertTrue(game.P4.getHand().toString().contains("[F15, F15, F40, Lance]"), "P4 hand incorrectly displayer");
+
+        assertEquals(12,game.P2.getHand().size());
+
+    }
+    private static InputStream createInputStreamFromList(List<String> inputs) {
+        InputStream result = new ByteArrayInputStream(inputs.get(0).getBytes());
+
+        for (int i = 1; i < inputs.size(); i++) {
+            result = new SequenceInputStream(result, new ByteArrayInputStream(inputs.get(i).getBytes()));
+        }
+
+        return result;
+    }
+
+    public void initializePlayerHand(Game game){
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 8, "foe");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 8, "foe");
+        AdventureCard F40 = new AdventureCard("adventure", "F40", 40, 2, "foe");
+        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 6, "weapon");
+        AdventureCard Horse = new AdventureCard("adventure", "Horse", 10, 12, "weapon");
+        AdventureCard Excalibur = new AdventureCard("adventure", "Excalibur", 30, 2, "weapon");
+        AdventureCard Sword = new AdventureCard("adventure", "Sword", 10, 16, "weapon");
+        AdventureCard BattleAxe = new AdventureCard("adventure", "Battle Axe", 15, 8, "weapon");
+        AdventureCard Lance = new AdventureCard("adventure", "Lance", 20, 6, "weapon");
+
+        game.P1.getHand().clear();
+        game.P1.getHand().add(F5);
+        game.P1.getHand().add(F5);
+        game.P1.getHand().add(F15);
+        game.P1.getHand().add(F15);
+        game.P1.getHand().add(Dagger);
+        game.P1.getHand().add(Sword);
+        game.P1.getHand().add(Sword);
+        game.P1.getHand().add(Horse);
+        game.P1.getHand().add(Horse);
+        game.P1.getHand().add(BattleAxe);
+        game.P1.getHand().add(BattleAxe);
+        game.P1.getHand().add(Lance);
+
+        game.P2.getHand().clear();
+        game.P2.getHand().add(F5);
+        game.P2.getHand().add(F5);
+        game.P2.getHand().add(F15);
+        game.P2.getHand().add(F15);
+        game.P2.getHand().add(F40);
+        game.P2.getHand().add(Dagger);
+        game.P2.getHand().add(Sword);
+        game.P2.getHand().add(Horse);
+        game.P2.getHand().add(Horse);
+        game.P2.getHand().add(BattleAxe);
+        game.P2.getHand().add(BattleAxe);
+        game.P2.getHand().add(Excalibur);
+
+        game.P3.getHand().clear();
+        game.P3.getHand().add(F5);
+        game.P3.getHand().add(F5);
+        game.P3.getHand().add(F5);
+        game.P3.getHand().add(F15);
+        game.P3.getHand().add(Dagger);
+        game.P3.getHand().add(Sword);
+        game.P3.getHand().add(Sword);
+        game.P3.getHand().add(Sword);
+        game.P3.getHand().add(Horse);
+        game.P3.getHand().add(Horse);
+        game.P3.getHand().add(BattleAxe);
+        game.P3.getHand().add(Lance);
+
+        game.P4.getHand().clear();
+        game.P4.getHand().add(F5);
+        game.P4.getHand().add(F15);
+        game.P4.getHand().add(F15);
+        game.P4.getHand().add(F40);
+        game.P4.getHand().add(Dagger);
+        game.P4.getHand().add(Dagger);
+        game.P4.getHand().add(Sword);
+        game.P4.getHand().add(Horse);
+        game.P4.getHand().add(Horse);
+        game.P4.getHand().add(BattleAxe);
+        game.P4.getHand().add(Lance);
+        game.P4.getHand().add(Excalibur);
+
+
+
+    }
 }
+
+
+
+
+
+
+
+
+
+
+

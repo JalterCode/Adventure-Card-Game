@@ -49,12 +49,17 @@ public class Game {
                     clearDisplay();
 
                     currentPlayerNum = (currentPlayerNum + 1) % players.length;
+                    finished = checkWinners();
+                    if(finished){
+                        break;
+                    }
                 }
-
-
 
             }
             finished = checkWinners();
+            if(finished){
+                break;
+            }
         }
 
 
@@ -296,8 +301,16 @@ public class Game {
                     continue; // Skip to the next player
                 }
 
-                System.out.println(player.getID() + ", would you like to participate in the current quest?");
+                System.out.println(player.getID() + ", would you like to participate in the current quest? (Y/N)");
                 player.setParticipating(askToParticipate(player));
+
+                //DRAW CARD ONLY IF THEY CHOOSE TO PARTICIPATE
+                if(player.isParticipating()){
+                    drawAdventureCard(player);
+                    if (player.getHand().size() > 12) {
+                        trimHand(player);
+                    }
+                }
 
                 // Update list to remove player if they press no
                 if (!player.isParticipating()) {
@@ -316,10 +329,7 @@ public class Game {
             // Draw adventure card and possibly trim hand
             for (Player player : initialPlayers) {
                 System.out.println("\n" + player.getID() + " please setup an attack.");
-                drawAdventureCard(player);
-                if (player.getHand().size() > 12) {
-                    trimHand(player);
-                }
+
                 currentAttack = buildAttack(player);
                 attacks.add(currentAttack);
 
@@ -341,14 +351,17 @@ public class Game {
                 System.out.println("There are no more eligible players that can participate. Ending quest.");
                 break;
             }
+            //DISCARD CARDS AFTER FIRST STAGE IS OVER
+            discardMultipleCards(attacks);
         }
 
         for(Player player: initialPlayers){
             System.out.println(player.getID() + " is awarded with " + stages.size() + " shields");
-            player.setShields(stages.size());
+            int award = player.getShields() + stages.size();
+            player.setShields(award);
         }
 
-        discardMultipleCards(attacks);
+
         discardMultipleCards(stages);
         for(int i = 0; i < stages.size();i++) { //loop for each stage
             for(int m = 0; m < stages.get(i).size(); m++){ //loop for each card in the stage
@@ -573,6 +586,7 @@ public class Game {
 
     public int trimHand(Player player) {
         int n = player.getHand().size() - 12;
+        System.out.println(player.getID() + ": ");
         System.out.println("You must discard " + n + " cards.");
         Scanner scanner = new Scanner(System.in);
 
