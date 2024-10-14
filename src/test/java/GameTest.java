@@ -1814,12 +1814,12 @@ class GameTest {
         stages.get(1).add(test1);
         stages.get(1).add(test2);
 
-        InputStream input1 = new ByteArrayInputStream("n\n".getBytes()); // Pick first card
-        InputStream input2 = new ByteArrayInputStream("n\n".getBytes()); // Pick second card
-        InputStream input3 = new ByteArrayInputStream("y\n".getBytes()); // Confirm to proceed
-        InputStream input4 = new ByteArrayInputStream("2\nquit\n".getBytes()); // Stage building inputs
-        InputStream input5 = new ByteArrayInputStream("y\n".getBytes()); // Confirm to proceed again
-        InputStream input6 = new ByteArrayInputStream("quit\n".getBytes()); // Final stage building inputs
+        InputStream input1 = new ByteArrayInputStream("n\n".getBytes());
+        InputStream input2 = new ByteArrayInputStream("n\n".getBytes());
+        InputStream input3 = new ByteArrayInputStream("y\n".getBytes());
+        InputStream input4 = new ByteArrayInputStream("2\nquit\n".getBytes());
+        InputStream input5 = new ByteArrayInputStream("y\n".getBytes());
+        InputStream input6 = new ByteArrayInputStream("quit\n".getBytes());
 
         System.setIn(new SequenceInputStream(
                 new SequenceInputStream(
@@ -1835,6 +1835,112 @@ class GameTest {
         assertTrue(game.getAdventureDeck().getDiscard().contains(Excalibur));
 
     }
+    @Test
+    @DisplayName("check sponsoring player hand size, ensuring the correct amount is added")
+    public void RESP28_test_01() {
+        Game game = new Game();
+        game.setSponsoringPlayer(game.P1);
+
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        stages.add(new ArrayList<>());
+
+        AdventureCard Excalibur = new AdventureCard("adventure", "Excalibur", 30, 2, "weapon");
+
+        AdventureCard test1 = new AdventureCard("adventure", "Excalibur", 1, 2, "foe");
+        AdventureCard test2 = new AdventureCard("adventure", "Dagger", 1, 6, "weapon");
+
+        game.P4.addCardToHand(Excalibur);
+        game.P4.addCardToHand(Excalibur);
+//n,n,y,2,quit,y,quit
+
+        stages.get(0).add(test1);
+        stages.get(0).add(test2);
+        stages.get(1).add(test1);
+        stages.get(1).add(test2);
+
+        InputStream input1 = new ByteArrayInputStream("n\n".getBytes());
+        InputStream input2 = new ByteArrayInputStream("n\n".getBytes());
+        InputStream input3 = new ByteArrayInputStream("y\n".getBytes());
+        InputStream input4 = new ByteArrayInputStream("2\nquit\n".getBytes());
+        InputStream input5 = new ByteArrayInputStream("y\n".getBytes());
+        InputStream input6 = new ByteArrayInputStream("quit\n".getBytes());
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        new SequenceInputStream(input1, input2),
+                        new SequenceInputStream(input3, input4)
+                ),
+                new SequenceInputStream(input5, input6)
+        ));
+
+        game.beginQuest(stages);
+
+        assertEquals(6,game.P1.getHand().size()); //hand should be 6, quest is built with 4 cards and there are 2 stages
+
+    }
+
+    @Test
+    @DisplayName("check sponsoring player is correctly prompted to trim hand if they exceed 12 cards when drawing after sponsoring")
+    public void RESP28_test_02() {
+        Game game = new Game();
+        game.setSponsoringPlayer(game.P1);
+
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        stages.add(new ArrayList<>());
 
 
+
+        AdventureCard Excalibur = new AdventureCard("adventure", "Excalibur", 30, 2, "weapon");
+
+        AdventureCard test1 = new AdventureCard("adventure", "Excalibur", 1, 2, "foe");
+        AdventureCard test2 = new AdventureCard("adventure", "Dagger", 1, 6, "weapon");
+
+        //inititate hand to 7 so that when the game draws 6 cards, they have to remove 1
+        for(int i = 0; i < 7; i++){
+            game.drawAdventureCard(game.P1);
+        }
+
+        game.P4.addCardToHand(Excalibur);
+        game.P4.addCardToHand(Excalibur);
+
+        stages.get(0).add(test1);
+        stages.get(0).add(test2);
+        stages.get(1).add(test1);
+        stages.get(1).add(test2);
+
+        InputStream input1 = new ByteArrayInputStream("n\n".getBytes()); // Pick first card
+        InputStream input2 = new ByteArrayInputStream("n\n".getBytes()); // Pick second card
+        InputStream input3 = new ByteArrayInputStream("y\n".getBytes());
+        InputStream input4 = new ByteArrayInputStream("2\nquit\n".getBytes());
+        InputStream input5 = new ByteArrayInputStream("y\n".getBytes());
+        InputStream input6 = new ByteArrayInputStream("quit\n".getBytes());
+        InputStream input7 = new ByteArrayInputStream("1\n".getBytes());
+
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        new SequenceInputStream(
+                                new SequenceInputStream(input1, input2),
+                                new SequenceInputStream(input3, input4)
+                        ),
+                        new SequenceInputStream(input5, input6)
+                ),
+                input7
+        ));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+
+        game.beginQuest(stages);
+
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("You must discard 1 cards"),"player was not prompted to discard");
+
+        assertEquals(12,game.P1.getHand().size()); //hand should be 6, quest is built with 4 cards and there are 2 stages
+    }
 }
