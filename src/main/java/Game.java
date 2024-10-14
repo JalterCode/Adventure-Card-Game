@@ -1,3 +1,5 @@
+import jdk.swing.interop.SwingInterOpUtils;
+
 import java.util.*;
 
 public class Game {
@@ -34,11 +36,10 @@ public class Game {
         winners.clear();
         while (!finished) {
             questing = false;
-            if(playTurn()){
-                if(eventDeck.getCards().get(0) instanceof QuestCard){
-                    if(questing) { //if it returns true, it is a quest card
-                        beginQuest(gameStages);
-                    }
+            if(playTurn()) {
+                if (questing) { //if it returns true, it is a quest card
+                    beginQuest(gameStages);
+                    System.out.println("QUESTING!!!!!!!!!!!!!!!!!!!!");
                     System.out.println(players[currentPlayerNum] + "'s turn has ended.");
 
                     System.out.println("Press <return> to end and pass your turn.");
@@ -49,20 +50,32 @@ public class Game {
                     clearDisplay();
 
                     currentPlayerNum = (currentPlayerNum + 1) % players.length;
+
                     finished = checkWinners();
                     if(finished){
                         break;
                     }
-                }
+                }else{
+                    System.out.println("NOTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+                    System.out.println(players[currentPlayerNum] + "'s turn has ended.");
 
+                    System.out.println("Press <return> to end and pass your turn.");
+
+                    Scanner scanner = new Scanner(System.in);
+                    scanner.nextLine(); // This waits for the player to press <return>
+
+                    clearDisplay();
+
+                    currentPlayerNum = (currentPlayerNum + 1) % players.length;
+
+                    finished = checkWinners();
+                }
             }
             finished = checkWinners();
             if(finished){
                 break;
             }
         }
-
-
     }
 
 
@@ -224,6 +237,7 @@ public class Game {
             currentPlayerNum = (currentPlayerNum + 1) % players.length;
 
             if (players[currentPlayerNum].getID().equals(startingPlayer.getID())) {
+                questing = false;
                 break;
             }
         }
