@@ -147,34 +147,27 @@ class GameTest {
         game.P3.setShields(2);
         game.P4.setShields(7);
 
-        Deck eventDeck = new Deck();
-        EventCard Test = new EventCard("event", "Test", 1);
-        eventDeck.addCard(Test);
-        game.setEventDeck(eventDeck);
-
-        pressReturn();
-        game.play();
+        game.checkWinners();
 
         assertEquals(2, game.getWinners().size());
     }
 
     @Test
-    @DisplayName("Ensure game correctly terminates when winner is assigned")
+    @DisplayName("Ensure game correctly terminates and displays winner when winner is assigned")
     void RESP04_test_01() {
         Game game = new Game();
         game.P1.setShields(7);
 
-        Deck eventDeck = new Deck();
-        EventCard Test = new EventCard("event", "Test", 1);
-        eventDeck.addCard(Test);
-        game.setEventDeck(eventDeck);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
 
-        pressReturn();
+        game.checkWinners();
 
-        game.play();
-        assertTrue(game.isGameFinished()); //terminate when winner
-        assertEquals(1, game.getWinners().size()); //should only be one winner
+        String output = outputStream.toString();
+
+        assertTrue(output.contains("Winners: [P1]"),"incorrect winner displayed");
         assertTrue(game.getWinners().contains(game.P1));
+        assertTrue(game.checkWinners());
     }
 
     @Test
@@ -486,7 +479,7 @@ class GameTest {
     @DisplayName("Test that the game correctly passes the turn to the next player after pressing enter")
     void RESP10_test_01() {
         Game game = new Game();
-        game.P2.setShields(7); //simply here to end the game as the loop would keep running
+
 
         Player originalPlayer = game.players[game.currentPlayerNum];
 
@@ -501,7 +494,7 @@ class GameTest {
         pressReturn();
 
 
-        game.play();
+        game.playTurn();
 
         Player currentPlayer = game.players[game.currentPlayerNum];
 
@@ -1189,7 +1182,6 @@ class GameTest {
     public void RESP20_test_01() {
         Game game = new Game();
         game.setSponsoringPlayer(game.P1);
-        game.distributeAdventureCards();
 
         ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
         stages.add(new ArrayList<>());
@@ -1228,7 +1220,6 @@ class GameTest {
     public void RESP20_test_02() {
         Game game = new Game();
         game.setSponsoringPlayer(game.P1);
-        game.distributeAdventureCards();
 
         ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
         stages.add(new ArrayList<>());
@@ -1271,7 +1262,12 @@ class GameTest {
     public void RESP21_test_01() {
         Game game = new Game();
         game.setSponsoringPlayer(game.P1);
-        game.distributeAdventureCards(); //in this scenario, each player will need to trim as they start with 12
+        game.distributeAdventureCards();
+
+        //make logic MORE SIMPLE by removing p1's hand to require less input
+        for(int i = 0; i < 12; i++){
+            game.P1.getHand().remove(0);
+        }
 
         ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
         stages.add(new ArrayList<>());
@@ -1313,8 +1309,8 @@ class GameTest {
         assertTrue(output.contains("was successfully discarded"),
                 "card not discarded");
 
-        //ACCOUNTING FOR THE EXTRA DISCARDED CARD FROM THE ATTACK
-        assertEquals(2, game.getAdventureDeck().getDiscard().size()); //ensure discard pile is still updated
+        //ACCOUNTING FOR THE EXTRA DISCARDED CARDS FROM THE ATTACK AND SPONSOR
+        assertEquals(4, game.getAdventureDeck().getDiscard().size()); //ensure discard pile is still updated
 
     }
 
@@ -1323,7 +1319,6 @@ class GameTest {
     public void RESP21_test_02() {
         Game game = new Game();
         game.setSponsoringPlayer(game.P1);
-        game.distributeAdventureCards(); //in this scenario, each player will need to trim as they start with 12
 
         ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
         stages.add(new ArrayList<>());
@@ -1831,7 +1826,8 @@ class GameTest {
 
         game.beginQuest(stages);
 
-        assertEquals(1,game.getAdventureDeck().discardSize());
+        //ACCOUNTING FOR THE STAGE BEING BUILT WITH 4 CARDS
+        assertEquals(5,game.getAdventureDeck().discardSize());
         assertTrue(game.getAdventureDeck().getDiscard().contains(Excalibur));
 
     }

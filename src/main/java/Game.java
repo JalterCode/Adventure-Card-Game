@@ -20,6 +20,10 @@ public class Game {
     public int currentPlayerNum = 0;
     boolean finished = false;
 
+    ArrayList<ArrayList<AdventureCard>> gameStages;
+
+    Boolean questing;
+
 
     public Game() {
         adventureDeckSetup();
@@ -29,27 +33,60 @@ public class Game {
     public void play() {
         winners.clear();
         while (!finished) {
-            playTurn();
-            for (Player player : players) {
-                if (player.getShields() >= 7) {
-                    winners.add(player);
-                }
-            }
-            if (!winners.isEmpty()) {
-                System.out.println("Winners: " + winners);
-                System.out.println("Now ending game...");
-                finished = true;
-            }
+            questing = false;
+            if(playTurn()){
+                if(eventDeck.getCards().get(0) instanceof QuestCard){
+                    if(questing) { //if it returns true, it is a quest card
+                        beginQuest(gameStages);
+                    }
+                    System.out.println(players[currentPlayerNum] + "'s turn has ended.");
 
+                    System.out.println("Press <return> to end and pass your turn.");
+
+                    Scanner scanner = new Scanner(System.in);
+                    scanner.nextLine(); // This waits for the player to press <return>
+
+                    clearDisplay();
+
+                    currentPlayerNum = (currentPlayerNum + 1) % players.length;
+                }
+
+
+
+            }
+            finished = checkWinners();
         }
+
+
     }
 
-    public void playTurn() {
+
+    public boolean checkWinners() {
+        for (Player player : players) {
+            if (player.getShields() >= 7) {
+                winners.add(player);
+            }
+        }
+        if (!winners.isEmpty()) {
+            System.out.println("Winners: " + winners);
+            System.out.println("Now ending game...");
+            return true;
+        }
+        return false;
+    }
+
+    public boolean playTurn() {
         System.out.println("It is now " + players[currentPlayerNum].getID() + "'s turn.");
         System.out.println("Hand: " + players[currentPlayerNum].getHand());
-        drawEventCard(players[currentPlayerNum]);
+
+        Card card = drawEventCard(players[currentPlayerNum]);
+
         if (players[currentPlayerNum].getHand().size() > 12) {
             trimHand(players[currentPlayerNum]);
+        }
+
+        if(card instanceof QuestCard){
+            return true;
         }
         System.out.println(players[currentPlayerNum] + "'s turn has ended.");
 
@@ -61,6 +98,10 @@ public class Game {
         clearDisplay();
 
         currentPlayerNum = (currentPlayerNum + 1) % players.length;
+
+
+
+        return false;
     }
 
 
@@ -151,7 +192,9 @@ public class Game {
         }
 
         if (card instanceof QuestCard) {
+            questing = true;
             sponsorQuest(card);
+
         }
 
 
@@ -160,15 +203,16 @@ public class Game {
 
     public void sponsorQuest(Card card) {
         Player startingPlayer = players[currentPlayerNum];
-
         boolean questSponsored = false;
+        QuestCard questCard = (QuestCard) card;
 
         while (!questSponsored) {
             questSponsored = askToSponsorQuest(players[currentPlayerNum]);
             if (questSponsored) {
                 System.out.println(players[currentPlayerNum].getID() + " has sponsored the quest");
-                ((QuestCard) card).setSponsored(true);
                 sponsoringPlayer = players[currentPlayerNum];
+
+                questCard.setSponsored(true);
                 buildQuest(sponsoringPlayer, (QuestCard) card);
                 break;
             }
@@ -178,11 +222,13 @@ public class Game {
                 break;
             }
         }
-        if (!(((QuestCard) card).isSponsored())) {
+        if (!questCard.isSponsored()) {
             eventDeck.discard(card);
             System.out.println("Nobody sponsored");
             System.out.println("Discarding the quest: " + card.getName());
+            questing = false;
         }
+
     }
 
     public boolean askToSponsorQuest(Player player) {
@@ -207,8 +253,7 @@ public class Game {
     public boolean askToParticipate(Player player) {
         Scanner scanner = new Scanner(System.in);
         boolean validInput = false;
-        String input = null;
-
+        String input;
         while (!validInput) {
             input = scanner.nextLine().trim().toUpperCase();
             if (input.equals("Y")) {
@@ -317,6 +362,7 @@ public class Game {
         }
 
         System.out.println("Quest ended.");
+        questing = false;
     }
 
 
@@ -389,9 +435,10 @@ public class Game {
             }
         }
 
-
+        gameStages = stages;
         clearDisplay();
         System.out.println("Built all stages. Now starting quest: " + quest.getName());
+        questing = true;
         return stages;
     }
 
@@ -553,7 +600,7 @@ public class Game {
             Card card = player.discardHand(pos);
             adventureDeck.discard(card);
             System.out.println(card + " was successfully discarded");
-            System.out.println("Updated Hand: "+ player.getHand());
+            System.out.println("Updated Hand: "+ player.getHand() + "\n\n");
 
         }
 
