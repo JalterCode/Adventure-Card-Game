@@ -338,8 +338,11 @@ public class Game {
                     System.out.println(player.getID() + "'s attack was insufficient");
                     player.setParticipating(false); // Mark as not participating
                     toRemove.add(player); // Remove player immediately after failing attack
+                    clearDisplay();
                 } else {
                     System.out.println(player.getID() + "'s attack was sufficient");
+                    clearDisplay();
+
                 }
             }
 
@@ -615,7 +618,7 @@ public class Game {
             adventureDeck.discard(card);
             System.out.println(card + " was successfully discarded");
             System.out.println("Updated Hand: "+ player.getHand() + "\n\n");
-
+            clearDisplay();
         }
 
         return n;
