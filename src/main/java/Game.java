@@ -304,6 +304,18 @@ public class Game {
         }
 
         discardMultipleCards(attacks);
+        discardMultipleCards(stages);
+        for(int i = 0; i < stages.size();i++) { //loop for each stage
+            for(int m = 0; m < stages.get(i).size(); m++){ //loop for each card in the stage
+                drawAdventureCard(sponsoringPlayer);
+            }
+            drawAdventureCard(sponsoringPlayer);
+        }
+
+        if(sponsoringPlayer.getHand().size() > 12){
+            trimHand(sponsoringPlayer);
+        }
+
         System.out.println("Quest ended.");
     }
 
@@ -311,7 +323,6 @@ public class Game {
     public void discardMultipleCards(ArrayList<ArrayList<AdventureCard>> cardList){
         for(int i = 0; i < cardList.size();i++){
             for(AdventureCard card: cardList.get(i)){
-                System.out.println("discarding " + card.getName());
                 adventureDeck.discard(card);
             }
         }
@@ -594,5 +605,3 @@ public class Game {
     }
 
 }
-
-
