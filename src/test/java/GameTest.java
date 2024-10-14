@@ -1313,7 +1313,8 @@ class GameTest {
         assertTrue(output.contains("was successfully discarded"),
                 "card not discarded");
 
-        assertEquals(1, game.getAdventureDeck().getDiscard().size()); //ensure discard pile is still updated
+        //ACCOUNTING FOR THE EXTRA DISCARDED CARD FROM THE ATTACK
+        assertEquals(2, game.getAdventureDeck().getDiscard().size()); //ensure discard pile is still updated
 
     }
 
