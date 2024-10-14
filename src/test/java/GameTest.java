@@ -1662,7 +1662,6 @@ class GameTest {
         //AS EVERY OTHER PERSON DECLINED TO PARTICIPATE, AND P4'S ATTACK WAS INSUFFICIENT, THE QUEST WILL END
         assertTrue(output.contains("There are no more eligible players that can participate. Ending quest."), "p4 still allowed");
     }
-
     @Test
     @DisplayName("check if the winning player correctly gets the shields assigned to them")
     public void RESP26_test_01() {
@@ -1758,6 +1757,83 @@ class GameTest {
 
         assertTrue(output.contains("Current stage: 2"),"did not make it to second stage");
 
-        assertEquals(0,game.P4.getShields());
+        assertEquals(0,game.P4.getShields()); //won a quest with 2 stages
+
     }
+
+    @Test
+    @DisplayName("check that discardMultipleCards performs correctly")
+    public void RESP27_test_01() {
+        Game game = new Game();
+
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        stages.add(new ArrayList<>());
+
+        AdventureCard Excalibur = new AdventureCard("adventure", "Excalibur", 30, 2, "weapon");
+
+        AdventureCard test1 = new AdventureCard("adventure", "Excalibur", 1, 2, "foe");
+        AdventureCard test2 = new AdventureCard("adventure", "Dagger", 1, 6, "weapon");
+
+        game.P4.addCardToHand(Excalibur);
+        game.P4.addCardToHand(Excalibur);
+
+        stages.get(0).add(test1);
+        stages.get(0).add(test2);
+        stages.get(1).add(test1);
+        stages.get(1).add(test2);
+
+        game.discardMultipleCards(stages);
+
+        assertEquals(4,game.getAdventureDeck().discardSize());
+
+    }
+
+    @Test
+    @DisplayName("check that the correct cards are discarded in actual game logic")
+    public void RESP27_test_02() {
+
+        Game game = new Game();
+        game.setSponsoringPlayer(game.P1);
+
+        ArrayList<ArrayList<AdventureCard>> stages = new ArrayList<>();
+        stages.add(new ArrayList<>());
+        stages.add(new ArrayList<>());
+
+        AdventureCard Excalibur = new AdventureCard("adventure", "Excalibur", 30, 2, "weapon");
+
+        AdventureCard test1 = new AdventureCard("adventure", "Excalibur", 1, 2, "foe");
+        AdventureCard test2 = new AdventureCard("adventure", "Dagger", 1, 6, "weapon");
+
+        game.P4.addCardToHand(Excalibur);
+        game.P4.addCardToHand(Excalibur);
+
+        stages.get(0).add(test1);
+        stages.get(0).add(test2);
+        stages.get(1).add(test1);
+        stages.get(1).add(test2);
+
+        InputStream input1 = new ByteArrayInputStream("n\n".getBytes()); // Pick first card
+        InputStream input2 = new ByteArrayInputStream("n\n".getBytes()); // Pick second card
+        InputStream input3 = new ByteArrayInputStream("y\n".getBytes()); // Confirm to proceed
+        InputStream input4 = new ByteArrayInputStream("2\nquit\n".getBytes()); // Stage building inputs
+        InputStream input5 = new ByteArrayInputStream("y\n".getBytes()); // Confirm to proceed again
+        InputStream input6 = new ByteArrayInputStream("quit\n".getBytes()); // Final stage building inputs
+
+        System.setIn(new SequenceInputStream(
+                new SequenceInputStream(
+                        new SequenceInputStream(input1, input2),
+                        new SequenceInputStream(input3, input4)
+                ),
+                new SequenceInputStream(input5, input6)
+        ));
+
+        game.beginQuest(stages);
+
+        assertEquals(1,game.getAdventureDeck().discardSize());
+        assertTrue(game.getAdventureDeck().getDiscard().contains(Excalibur));
+
+    }
+
+
 }

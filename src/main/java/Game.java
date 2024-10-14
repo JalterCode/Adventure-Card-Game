@@ -581,6 +581,8 @@ public class Game {
         return this.sponsoringPlayer = sponsoringPlayer;
     }
 
+    public void discardMultipleCards(ArrayList<ArrayList<AdventureCard>> stages) {
+    }
 }
 
 
