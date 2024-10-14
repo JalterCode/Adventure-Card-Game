@@ -127,12 +127,13 @@ public class Game {
     }
 
     public void drawAdventureCard(Player player) {
-        if (adventureDeck.deckSize() > 0) {
-            AdventureCard card = (AdventureCard) adventureDeck.getCards().remove(0);
-            player.addCardToHand(card);
-            Collections.sort(player.getHand());
-
+        if (adventureDeck.deckSize() == 0) {
+            adventureDeck.reShuffle();
         }
+        AdventureCard card = (AdventureCard) adventureDeck.getCards().remove(0);
+        player.addCardToHand(card);
+        Collections.sort(player.getHand());
+
     }
 
     public Card drawEventCard(Player player) {
@@ -301,9 +302,20 @@ public class Game {
             System.out.println(player.getID() + " is awarded with " + stages.size() + " shields");
             player.setShields(stages.size());
         }
+
+        discardMultipleCards(attacks);
         System.out.println("Quest ended.");
     }
 
+
+    public void discardMultipleCards(ArrayList<ArrayList<AdventureCard>> cardList){
+        for(int i = 0; i < cardList.size();i++){
+            for(AdventureCard card: cardList.get(i)){
+                System.out.println("discarding " + card.getName());
+                adventureDeck.discard(card);
+            }
+        }
+    }
     public int calculateTotalValue(ArrayList<AdventureCard> adventureList){
         int total = 0;
         for(AdventureCard adventureCard: adventureList){
@@ -581,8 +593,6 @@ public class Game {
         return this.sponsoringPlayer = sponsoringPlayer;
     }
 
-    public void discardMultipleCards(ArrayList<ArrayList<AdventureCard>> stages) {
-    }
 }
 
 
