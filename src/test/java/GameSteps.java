@@ -347,6 +347,158 @@ public class GameSteps {
     }
 
 
+
+    @And("the event deck is setup to draw Q4 then Q3")
+    public void event_deck_draw_Q4_then_Q3(){
+        Deck eventDeck = new Deck();
+        QuestCard Q4 = new QuestCard("quest", "Q4", 4, 1);
+        QuestCard Q3 = new QuestCard("quest", "Q3", 3, 1);
+        eventDeck.addCard(Q4);
+        eventDeck.addCard(Q3);
+        game.setEventDeck(eventDeck);
+    }
+
+
+    @And("P1 builds the quest with the first stage having only a foe")
+    public void P1_builds_quest_with_first_stage_having_only_foe(){
+        List<String> inputs = List.of(
+                "3\n", //select single F15
+                "quit\n", //finish building stage
+                "3\n", //select F15
+                "3\n", //select dagger
+                "quit\n", //finish building stage 2
+                "1\n", //add a F5 to stage
+                "8\n", //add a lance to stage
+                "quit\n", //finish building stage 3
+                "1\n", //F5
+                "6\n", //battleaxe
+                "1\n", //sword
+                "quit\n" //finish building stage 4, 30
+        );
+
+        inputQueue.addAll(inputs);
+
+
+
+    }
+    @And("P1, P3, P4 participate, discard cards, build and resolve attacks for stage 1, P3 attack fails")
+    public void P1_P3_P4_participate_P3_fails_stage1(){
+
+        List<String> inputs = List.of(
+                "y\n", //player 2 decides to participate
+                "1\n",  //discard F5
+                "y\n", //player 3 decided to participate
+                "1\n", //player 3 discards F5
+                "y\n", //player 4 decides to participate
+                "1\n",  //player 4 discards F5
+                "6\n", //player 2 chooses a Dagger
+                "7\n", //player 2 chooses a Horse
+                "quit\n", //player 1 finishes attack, value 15
+                "4\n", //P3 chooses a Dagger
+                "quit\n", //P3 completes attack, it fails
+                "4\n", //P4 adds dagger
+                "6\n", //P4 adds horse
+                "quit\n" //P4 finishes attack
+        );
+        inputQueue.addAll(inputs);
+    }
+
+    @And("P2 and P4 participate in and win stages 2, 3, and 4")
+    public void P2_P4_participate_and_win_stages_2_3_4(){
+        List<String> inputs = List.of(
+                "y\n", //player 2 decides to participate
+                "y\n", //player 3 decided to participate
+                "7\n",
+                "7\n",
+                "quit\n",
+                "5\n",
+                "5\n",
+                "quit\n",
+                "y\n",
+                "y\n",
+                "7\n",
+                "8\n",
+                "quit\n",
+                "4\n",
+                "8\n",
+                "quit\n",
+                "y\n",
+                "y\n",
+                "9\n",
+                "quit\n",
+                "9\n",
+                "quit\n"
+        );
+
+        inputQueue.addAll(inputs);
+    }
+
+
+    @And("P3 sponsors the quest and builds the stages")
+    public void P3_sponsors_the_quest_and_builds_the_stages(){
+
+        List<String> inputs = List.of(
+                "y\n", //P3 accepts sponsor
+                "1\n", //Add F5
+                "quit\n",
+                "2\n", //F15
+                "quit\n",
+                "2\n", // sword
+                "5\n", //horse
+                "1\n", //F5
+                "quit\n"
+        );
+
+        inputQueue.addAll(inputs);
+
+    }
+
+    @And("P1 declines to participate")
+    public void P1_declines_to_participate(){
+        inputQueue.add("n\n");
+    }
+
+    @And("P2 and P4 participate in and win stages 1, 2, and 3")
+    public void P2_P4_participate_and_win_stages_1_2_3(){
+        List<String> inputs = List.of(
+                "y\n",
+                "y\n",
+                "7\n",
+                "quit\n",
+                "5\n",
+                "quit\n",
+                "y\n",
+                "y\n",
+                "7\n",
+                "quit\n",
+                "6\n",
+                "quit\n",
+                "y\n",
+                "y\n",
+                "9\n",
+                "quit\n",
+                "9\n",
+                "quit\n"
+        );
+
+        inputQueue.addAll(inputs);
+    }
+
+    @Then("P2 and P4 should each have 7 shields")
+    public void P2_P4_both_have_7_shields(){
+
+        assertEquals(7,game.P2.getShields());
+        assertEquals(7,game.P4.getShields());
+
+    }
+
+    @Then("P2 and P4 should be declared winners")
+    public void P2_P4_declared_winners(){
+        assertEquals(2, game.getWinners().size()); //ensure that the size of winners is two
+        assertTrue(game.getWinners().contains(game.P2)); //check that it contains P2
+        assertTrue(game.getWinners().contains(game.P4)); //check that it contains P4
+    }
+
     private static InputStream createInputStreamFromList(List<String> inputs) {
         InputStream result = new ByteArrayInputStream(inputs.get(0).getBytes());
 
