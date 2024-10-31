@@ -44,4 +44,23 @@ Feature: Assignment 2 Tests
     And Quest logic is resolved
     Then P2 and P4 should each have 7 shields
     And P2 and P4 should be declared winners
+
+
+
+  Scenario: 0_winner_quest
+    Given a new game is started
+    And the event deck is setup to draw Q2
+    And the players are dealt their correct initial hands
+    And adventure deck is set up to ensure players draw the correct cards
+    When "P1" draws a quest of 2 stages and "accepts"
+    And P1 builds the quest with 2 stages
+    #probably going to need to change the way i do this later
+    And P2, P3, P4 participate, discard cards, build and resolve attacks for stage 1, all attacks fail
+    And "P1" trims their hand down to 12 cards from 14
+    And Quest logic is resolved
+    Then the quest should end with no winner
+
+      #Will discard 2 f5's using 1 twice
+    And P1 should no longer have any F5
+    And P1 should have new cards
     

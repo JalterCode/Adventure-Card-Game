@@ -1968,28 +1968,8 @@ class GameTest {
         testDeck.addCard(Lance);
 
         game.distributeAdventureCards(); //all players now have a randomized hand
-        //add two lists
 
-
-
-        // Create a new Deck for the combined deck
-        Deck newDeck = new Deck();
-
-        // Add cards from testDeck
-        for (Card card : testDeck.getCards()) {
-            newDeck.addCard(card);
-        }
-
-        // Add cards from the adventure deck
-        for (Card card : game.getAdventureDeck().getCards()) {
-            newDeck.addCard(card);
-        }
-
-        // Assuming you have a method to set the adventure deck in the Game class
-        game.setAdventureDeck(newDeck);
-
-        // Print out the cards in the new deck to verify
-        System.out.println("Combined Deck: " + newDeck.getCards());
+        game.setAdventureDeck(testDeck);
 
         initializePlayerHand(game);
 

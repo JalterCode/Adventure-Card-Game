@@ -4,10 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GameSteps {
     private Game game;
@@ -30,7 +30,6 @@ public class GameSteps {
         QuestCard Q4 = new QuestCard("quest", "Q4", 4, 3);
         eventDeck.addCard(Q4); //THIS IS THE ONLY EVENT CARD USED IN THE A-TEST, SO THIS IS OUR DECK, IT DOESNT MATTER
         game.setEventDeck(eventDeck);
-        System.out.println("Top Card of Event Deck is: " + eventDeck.getCards().getFirst().getName());
     }
 
     @And ("adventure deck is set up to ensure players draw the correct cards")
@@ -71,21 +70,9 @@ public class GameSteps {
         testDeck.addCard(Excalibur);
         testDeck.addCard(Excalibur);
 
-        Deck newDeck = new Deck();
 
-        // Add cards from testDeck
-        for (Card card : testDeck.getCards()) {
-            newDeck.addCard(card);
-        }
+        game.setAdventureDeck(testDeck);
 
-        // Add cards from the adventure deck
-        for (Card card : game.getAdventureDeck().getCards()) {
-            newDeck.addCard(card);
-        }
-
-        //set the new deck to be the deck that combines the deck from the test deck and new one
-        game.setAdventureDeck(newDeck);
-        System.out.println("Combined Deck: " + newDeck.getCards());
     }
 
     @And("the players are dealt their correct initial hands")
@@ -498,6 +485,95 @@ public class GameSteps {
         assertTrue(game.getWinners().contains(game.P2)); //check that it contains P2
         assertTrue(game.getWinners().contains(game.P4)); //check that it contains P4
     }
+
+
+    /*
+    Scenario 4: 0_winner_quest
+     */
+
+    @And("the event deck is setup to draw Q2")
+    public void event_deck_draw_Q2(){
+        Deck eventDeck = new Deck();
+        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+        eventDeck.addCard(Q2);
+        game.setEventDeck(eventDeck);
+    }
+
+    @And("P1 builds the quest with 2 stages")
+    public void P1_build_quest_2_stages(){
+        List<String> inputs = List.of(
+                "3\n", //F15
+                "quit\n", //finish stage with value of 15
+                "3\n", //F15
+                "4\n", //sword
+                "quit\n" //finish stage with value of 25
+        );
+
+        inputQueue.addAll(inputs);
+    }
+
+    @And("P2, P3, P4 participate, discard cards, build and resolve attacks for stage 1, all attacks fail")
+    public void P2_P3_P4_participate_and_lose_stage_1(){
+        List<String> inputs = List.of(
+                "y\n", //P2 decides to participate
+                "1\n",  //discard F5
+                "y\n", //P3 decided to participate
+                "1\n", //player 3 discards F5
+                "y\n", //P4 decides to participate
+                "1\n",  //P4 discards F5
+                "6\n", //P2 chooses a dagger
+                "quit\n",
+                "4\n", //P3 chooses a dagger
+                "quit\n",
+                "4\n", //P4 chooses a dagger
+                "quit\n"
+        );
+
+        inputQueue.addAll(inputs);
+    }
+
+    @Then("the quest should end with no winner")
+    public void quest_end_no_winner(){
+
+        assertEquals(0, game.getWinners().size()); //ensure no winners
+        assertFalse(game.questing); //check that the quest properly ended, aka not questing
+    }
+
+    @And("P1 should no longer have any F5")
+    public void P1_no_F5(){
+        //here we are going to check if the hand contains F5, it shouldn't as all of them would be removed
+        //as a result of discarding the excess cards after the quest, NONE were used to build the stages
+        assertFalse(game.P1.getHand().toString().contains("F5"));
+    }
+
+    @And("P1 should have new cards")
+    public void P1_new_cards(){
+
+        //ensure correct hand size
+        assertEquals(12,game.P1.getHand().size());
+
+        //the initial hand of P1 only contained 2 battleaxes and 1 lance, with the way the deck is structured
+        //in these tests, P1 will always have 2 battleaxes and 3 lance, proving that they drew cards
+
+        int battleAxeCount = 0;
+        int lanceCount = 0;
+
+        for(Card card: game.P1.getHand()){
+            if(card.getName().equals("Battle Axe")){
+                battleAxeCount+=1;
+            }
+            else if(card.getName().equals("Lance")){
+                lanceCount += 1;
+            }
+        }
+
+        assertEquals(3,battleAxeCount);
+        assertEquals(3,lanceCount);
+
+    }
+
+
+
 
     private static InputStream createInputStreamFromList(List<String> inputs) {
         InputStream result = new ByteArrayInputStream(inputs.get(0).getBytes());
