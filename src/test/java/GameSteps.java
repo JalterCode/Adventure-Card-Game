@@ -1,11 +1,7 @@
 import io.cucumber.java.en.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.SequenceInputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,23 +9,69 @@ public class GameSteps {
     private Game game;
     private List<String> inputQueue = new ArrayList<>();
 
+    private Map<String, ArrayList<AdventureCard>> simulatedHands = new HashMap<>();
+
+    Deck simulatedDeck = new Deck();
+
+
+
+
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+
     @Given("a new game is started")
     public void a_new_game_is_started() {
         game = new Game();
-        List<String> inputQueue = new ArrayList<>();
-
     }
     @And("a randomized hand is dealt")
     public void a_randomized_hand_is_dealt(){
         game.distributeAdventureCards();
-
     }
-    @And("the event deck is setup to draw the Q4 card first")
-    public void event_deck_draw_Q4_card_first(){
+
+
+    @And("the event deck is setup to draw {string} in that order")
+    public void event_deck_draw(String cards){
         Deck eventDeck = new Deck();
-        QuestCard Q4 = new QuestCard("quest", "Q4", 4, 3);
-        eventDeck.addCard(Q4); //THIS IS THE ONLY EVENT CARD USED IN THE A-TEST, SO THIS IS OUR DECK, IT DOESNT MATTER
+        QuestCard Q4 = new QuestCard("quest", "Q4", 4, 1);
+        EventCard Plague = new EventCard("event", "Plague", 1);
+        EventCard Prosperity = new EventCard("event", "Prosperity", 1);
+        EventCard QueenFavor = new EventCard("event", "Queen's Favor", 1);
+        QuestCard Q3 = new QuestCard("quest", "Q3", 3, 1);
+        QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
+
+        ArrayList<String> cardList = parseInputToList(cards);
+
+        for(String card: cardList){
+            if(card.equals("Q4")){
+                eventDeck.addCard(Q4);
+            }
+
+            if(card.equals("Q3")){
+                eventDeck.addCard(Q3);
+            }
+
+            if(card.equals("Plague")){
+                eventDeck.addCard(Plague);
+            }
+
+            if(card.equals("Prosperity")){
+                eventDeck.addCard(Prosperity);
+            }
+
+            if(card.equals("Queen's Favor")){
+                eventDeck.addCard(QueenFavor);
+            }
+
+            if(card.equals("Q2")){
+                eventDeck.addCard(Q2);
+            }
+
+
+        }
+
         game.setEventDeck(eventDeck);
+
+
     }
 
     @And ("adventure deck is set up to ensure players draw the correct cards")
@@ -43,6 +85,10 @@ public class GameSteps {
         AdventureCard F10 = new AdventureCard("adventure", "F10", 10, 1, "foe");
         AdventureCard Lance = new AdventureCard("adventure", "Lance", 20, 1, "weapon");
         AdventureCard Excalibur = new AdventureCard("adventure", "Excalibur", 30, 1, "weapon");
+        AdventureCard F5 = new AdventureCard("adventure", "F5", 5, 1, "foe");
+        AdventureCard F15 = new AdventureCard("adventure", "F15", 15, 1, "foe");
+        AdventureCard F20 = new AdventureCard("adventure", "F20", 20, 1, "foe");
+        AdventureCard Dagger = new AdventureCard("adventure", "Dagger", 5, 1, "weapon");
 
         //deck is in this order
         testDeck.addCard(F30);
@@ -58,6 +104,17 @@ public class GameSteps {
         testDeck.addCard(Excalibur);
         testDeck.addCard(Excalibur);
         testDeck.addCard(Excalibur);
+        testDeck.addCard(F5);
+        testDeck.addCard(F5);
+        testDeck.addCard(F5);
+        testDeck.addCard(F5);
+        testDeck.addCard(F5);
+        testDeck.addCard(Dagger);
+        testDeck.addCard(F10);
+        testDeck.addCard(F15);
+        testDeck.addCard(F20);
+        testDeck.addCard(F5);
+        testDeck.addCard(F5);
         testDeck.addCard(Excalibur);
         testDeck.addCard(Excalibur);
         testDeck.addCard(Excalibur);
@@ -69,10 +126,96 @@ public class GameSteps {
         testDeck.addCard(Excalibur);
         testDeck.addCard(Excalibur);
         testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+
+        testDeck.addCard(Excalibur);
+
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+        testDeck.addCard(Excalibur);
+
+        testDeck.addCard(Excalibur);
+
+        //deck is in this order
+        simulatedDeck.addCard(F30);
+        simulatedDeck.addCard(Sword);
+        simulatedDeck.addCard(BattleAxe);
+        simulatedDeck.addCard(F10);
+        simulatedDeck.addCard(Lance);
+        simulatedDeck.addCard(Lance);
+        simulatedDeck.addCard(BattleAxe);
+        simulatedDeck.addCard(Sword);
+        simulatedDeck.addCard(F30);
+        simulatedDeck.addCard(Lance);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(F5);
+        simulatedDeck.addCard(F5);
+        simulatedDeck.addCard(F5);
+        simulatedDeck.addCard(F5);
+        simulatedDeck.addCard(F5);
+        simulatedDeck.addCard(Dagger);
+        simulatedDeck.addCard(F10);
+        simulatedDeck.addCard(F15);
+        simulatedDeck.addCard(F20);
+        simulatedDeck.addCard(F5);
+        simulatedDeck.addCard(F5);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+
+        simulatedDeck.addCard(Excalibur);
+
+        simulatedDeck.addCard(Excalibur);
+
+        simulatedDeck.addCard(Excalibur);
+        simulatedDeck.addCard(Excalibur);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         game.setAdventureDeck(testDeck);
-
     }
 
     @And("the players are dealt their correct initial hands")
@@ -142,136 +285,236 @@ public class GameSteps {
         game.P4.getHand().add(BattleAxe);
         game.P4.getHand().add(Lance);
         game.P4.getHand().add(Excalibur);
+
+
+        simulatedHands.put("P1", new ArrayList<>(game.P1.getHand()));
+        simulatedHands.put("P2", new ArrayList<>(game.P2.getHand()));
+        simulatedHands.put("P3", new ArrayList<>(game.P3.getHand()));
+        simulatedHands.put("P4", new ArrayList<>(game.P4.getHand()));
+
+
+
     }
 
     @When("{string} draws a quest of {int} stages and {string}")
-    public void player_draws_a_quest_of_4_stages_and_chooses(String player, int stages, String answer){
+    public void player_draws_a_quest(String player, int stages, String answer){
         switch (answer) {
             case "declines":
                 inputQueue.add("n\n"); //Declines
                 break;
             case "accepts":
                 inputQueue.add("y\n"); //Accepts
+                System.out.println(inputQueue);
+
         }
     }
 
-    @And("{string} accepts the sponsor")
-    public void player_accepts_sponsor(String player){
-        inputQueue.add("y\n");
-    }
+    @And("{string} chooses to {string}")
+    public void player_accepts_declines(String playerID, String answer){
 
-    @And("P2 builds their stages")
-    public void P2_builds_their_stages(){
-        List<String> inputs = List.of(
-                "1\n",   //player 2 chooses F5 to add to first stage
-                "7\n", //player 2 adds horse to first stage
-                "quit\n", //complete stage building
-                "2\n",   //add F15 stage 2
-                "5\n",  //add Sword stage 2
-                "quit\n",  //finish building stage 2
-                "2\n", //add F15 to stage 3
-                "3\n",  //add dagger to stage 3
-                "4\n",  //add battle axe to stage 3
-                "quit\n", //finish building stage 3
-                "2\n",  //add F40 to stage 4
-                "3\n", //add battle axe to stage 4
-                "quit\n"//finish building stage 4
-        );
-
-        inputQueue.addAll(inputs);
-    }
-
-    @And("P1, P3, P4 participate, discard cards, build and resolve attacks for stage 1")
-    public void P1_P3_P4_participate_resolve_stage_1(){
-        List<String> inputs = List.of(
-                "y\n", //player 1 decides to participate
-                "1\n",  //discard F5
-                "y\n", //player 3 decided to participate
-                "1\n", //player 3 discards F5
-                "y\n", //player 4 decides to participate
-                "1\n",  //player 4 discards F5
-                "5\n", //player 1 chooses a Dagger
-                "5\n", //player 1 chooses a Sword
-                "quit\n", //player 1 finishes attack, value 15
-                "5\n", //P3 chooses a sword
-                "4\n", //P3 chooses a Dagger
-                "quit\n", //P3 completes attack
-                "4\n", //P4 adds dagger
-                "6\n", //P4 adds horse
-                "quit\n" //P4 finishes attack
-        );
-
-        inputQueue.addAll(inputs);
+        if(answer.equals("accept")){
+            inputQueue.add("y\n");
+        }
+        else{
+            inputQueue.add("n\n");
+        }
 
     }
 
-    @And("P1, P3, P4 participate, discard cards, build and resolve attacks for stage 2")
-    public void P1_P3_P4_participate_resolve_stage_2(){
+    @And("{string}, {string}, {string} participate and {string} discards")
+    public void threePlayers_participate_discard(String firstPlayer, String secondPlayer, String thirdPlayer, String discardingPlayer){
+        ArrayList<Player> players = new ArrayList<>();
 
-        List<String> inputs = List.of(
-                "y\n", //P1 participates
-                "y\n", //P3 participates
-                "y\n",  //P4 participates
-                "7\n", //P1 chooses horse
-                "6\n",  //P1 chooses sword
-                "quit\n", //P1 finishing building attack
-                "9\n", //P3 chooses axe
-                "4\n", //P3 chooses sword
-                "quit\n", //P3 finishes attack
-                "6\n", //P4 chooses horse
-                "6\n", // p4 chooses axe
-                "quit\n"//p4 finishes attack
-        );
+        Map<String, Player> playerMap = new HashMap<>();
+        playerMap.put("P1", game.P1);
+        playerMap.put("P2", game.P2);
+        playerMap.put("P3", game.P3);
+        playerMap.put("P4", game.P4);
 
-        inputQueue.addAll(inputs);
+        players.add(playerMap.get(firstPlayer));
+        players.add(playerMap.get(secondPlayer));
+        players.add(playerMap.get(thirdPlayer));
+
+        for (Player player : players) {
+            inputQueue.add("y\n");
+            ArrayList<AdventureCard> simulatedHand = simulatedHands.get(player.getID());
+
+            simulatedHand.add((AdventureCard) simulatedDeck.getCards().removeFirst());
+            Collections.sort(simulatedHand);
+
+
+            if (player == playerMap.get(discardingPlayer) || discardingPlayer.equals("everyone")) {
+                inputQueue.add("1\n");
+
+
+                simulatedHand.remove(0);
+                simulatedHands.put(player.getID(), simulatedHand);
+
+
+            }
+        }
     }
 
-    @And("P3, P4 participate, discard cards, build and resolve attacks for stage 3")
-    public void P3_P4_participate_resolve_stage_3(){
-        List<String> inputs = List.of(
-                "y\n", //both players participate
-                "y\n",
-                "10\n", //lance
-                "6\n", //horse
-                "4\n", //sword
-                "quit\n", //P3 finishes building attack
-                "7\n", // axe
-                "5\n", //sword
-                "6\n", //lance
-                "quit\n" //P4 finishes building attack
-        );
 
-        inputQueue.addAll(inputs);
+    @And("{string}, {string}, {string} participate")
+    public void threePlayers_participate(String firstPlayer, String secondPlayer, String thirdPlayer){
+
+        ArrayList<Player> players = new ArrayList<>();
+
+        Map<String, Player> playerMap = new HashMap<>();
+        playerMap.put("P1", game.P1);
+        playerMap.put("P2", game.P2);
+        playerMap.put("P3", game.P3);
+        playerMap.put("P4", game.P4);
+
+        players.add(playerMap.get(firstPlayer));
+        players.add(playerMap.get(secondPlayer));
+        players.add(playerMap.get(thirdPlayer));
+
+        for (Player player : players) {
+            inputQueue.add("y\n");
+            ArrayList<AdventureCard> simulatedHand = simulatedHands.get(player.getID());
+
+            simulatedHand.add((AdventureCard) simulatedDeck.getCards().removeFirst());
+            Collections.sort(simulatedHand);
+        }
+
 
     }
 
-    @And("P3, P4 participate, discard cards, build and resolve attacks for stage 4")
-    public void P3_P4_participate_resolve_stage_4(){
-        List<String> inputs = List.of(
-                "y\n", //both participate
-                "y\n",
-                "7\n", //axe
-                "6\n", //horse
-                "6\n", //Lance
-                "quit\n", //P3 finishes building attack
-                "4\n", //dagger
-                "4\n", //sword
-                "4\n", //lance
-                "5\n", //excalibur
-                "quit\n" //P4 finishes building attack
-        );
 
-        inputQueue.addAll(inputs);
+    @And("{string}, {string} participate")
+    public void twoPlayers_participate(String firstPlayer, String secondPlayer){
+
+        ArrayList<Player> players = new ArrayList<>();
+
+        Map<String, Player> playerMap = new HashMap<>();
+        playerMap.put("P1", game.P1);
+        playerMap.put("P2", game.P2);
+        playerMap.put("P3", game.P3);
+        playerMap.put("P4", game.P4);
+
+        players.add(playerMap.get(firstPlayer));
+        players.add(playerMap.get(secondPlayer));
+
+        for (Player player : players) {
+            inputQueue.add("y\n");
+            ArrayList<AdventureCard> simulatedHand = simulatedHands.get(player.getID());
+
+            simulatedHand.add((AdventureCard) simulatedDeck.getCards().removeFirst());
+            Collections.sort(simulatedHand);
+        }
+    }
+
+
+
+    @And("{string} participate")
+    public void players_participate(String players){
+        ArrayList<String> listPlayers = parseInputToList(players);
+
+        for (String playerID : listPlayers) {
+            inputQueue.add("y\n");
+            ArrayList<AdventureCard> simulatedHand = simulatedHands.get(playerID);
+
+            simulatedHand.add((AdventureCard) simulatedDeck.getCards().removeFirst());
+            Collections.sort(simulatedHand);
+            simulatedHands.put(playerID, simulatedHand);
+        }
+    }
+
+
+
+
+
+
+    @And("{string} builds {string} by using the cards {string}")
+    public void stage_builder(String playerID, String stage, String cards){
+
+        Player player = selectPlayer(playerID);
+
+        ArrayList<String> listCards = parseInputToList(cards);
+
+        String lastCard = listCards.getLast();
+
+        Set<String> usedCards = new HashSet<>();
+
+        ArrayList<AdventureCard> simulatedHand = simulatedHands.get(playerID);
+
+
+        System.out.println("CURRENT SIMULATED HAND: " + simulatedHand);
+
+
+        for(String card: listCards){
+
+            for (int i = 0; i < simulatedHand.size(); i++) {
+                if (card.equals(simulatedHand.get(i).getName()) && !usedCards.contains(card)) {
+
+                    simulatedHand.remove(i);
+                    simulatedHands.put(player.getID(), simulatedHand);
+
+                    inputQueue.add(i+1 + "\n");
+
+                    usedCards.add(card);
+
+                    if(card.equals(lastCard)){
+                        inputQueue.add("quit\n");
+
+                        usedCards.clear();
+                        break;
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    private ArrayList<String> parseInputToList(String input){
+
+        String[] parts = input.split(", ");
+        ArrayList<String> cards = new ArrayList<>();
+        for(String part: parts){
+            cards.add(part);
+        }
+
+        return cards;
+
+    }
+
+    @And("{string} draws {int} cards from stage being resolved")
+    public void stage_builder_draws(String playerID, int amount){
+        Player player = selectPlayer(playerID);
+        ArrayList<AdventureCard> simulatedHand = simulatedHands.get(player.getID());
+        for(int i = 0; i < amount; i++){
+            simulatedHand.add((AdventureCard) simulatedDeck.getCards().removeFirst());
+        }
+
+        Collections.sort(simulatedHand);
     }
 
     @And("{string} trims their hand down to 12 cards from {int}")
     public void player_trims_hand(String playerID, int handSize){
 
+        Player player = selectPlayer(playerID);
+
+        ArrayList<AdventureCard> simulatedHand = simulatedHands.get(player.getID());
+
+        simulatedHand.add((AdventureCard) simulatedDeck.getCards().removeFirst());
+        Collections.sort(simulatedHand);
+
+
+
+
+
         int amountTrim = handSize - 12;
 
         for(int i = 0; i < amountTrim; i++){
             inputQueue.add("1\n");
+            simulatedHand.removeFirst();
+
         }
+
+        simulatedHands.put(playerID, simulatedHand);
     }
 
 
@@ -282,214 +525,41 @@ public class GameSteps {
 
         game.drawEventCard(game.players[game.currentPlayerNum]);
         game.beginQuest(game.gameStages);
-        game.currentPlayerNum += 1; //need to go to the next player, the logic for this is normally in the play function
+        game.currentPlayerNum = (game.currentPlayerNum + 1) % game.players.length;
         inputQueue.clear();
         game.checkWinners(); // check for winners after each quest
     }
 
-    @Then("{string} wins the quest, with {int} shields awarded")
-    public void check_winner_quest(String playerID, int shields){
-        Player player;
-        switch (playerID) {
-            case "P1":
-                player = game.P1;
-                break;
-            case "P2":
-                player = game.P2;
-                break;
-            case "P3":
-                player = game.P3;
-                break;
-            case "P4":
-                player = game.P4;
-                break;
-            default: throw new IllegalArgumentException("Invalid player ID: " + playerID);
+    @And("{string} should have {int} shields")
+    public void check_shields(String playerID, int shields){
+
+
+        ArrayList<String> players = parseInputToList(playerID);
+
+        for(String playerId: players){
+            Player player = selectPlayer(playerId);
+            assertEquals(shields,player.getShields());
         }
 
-        assertEquals(shields,player.getShields());
+    }
+
+    @And("{string} should have the hand: {string}")
+    public void check_hand(String playerID, String hand){
+
+        Player player = selectPlayer(playerID);
+
+        assertTrue(player.getHand().toString().contains(hand));
 
     }
 
-    @And("P1 should have no shields and the correct hand")
-    public void P1_no_shields_correct_hand(){
-        assertTrue(game.P1.getHand().toString().contains("[F5, F10, F15, F15, F30, Horse, Battle Axe, Battle Axe, Lance]"), "P1 hand incorrectly displayed");
-        assertEquals(0, game.P1.getShields());
+    @And("{string} should have {int} cards in hand")
+    public void check_hand_size(String playerID, int amount){
+
+        Player player = selectPlayer(playerID);
+
+
+        assertEquals(amount,player.getHand().size());
     }
-
-    @And("P2 should have 12 cards in hand")
-    public void P2_12_cards(){
-        assertEquals(12,game.P2.getHand().size());
-    }
-
-    @And("P3 should have no shields and the correct hand")
-    public void P3_no_shields_correct_hand(){
-        assertEquals(0, game.P3.getShields());
-        assertTrue(game.P3.getHand().toString().contains("[F5, F5, F15, F30, Sword]"), "P3 hand incorrectly displayed");
-    }
-
-    @And("P4 should have 4 shields and the correct hand")
-    public void P4_4_shields_correct_hand(){
-        assertEquals(4,game.P4.getShields());
-        assertTrue(game.P4.getHand().toString().contains("[F15, F15, F40, Lance]"), "P4 hand incorrectly displayed");
-    }
-
-
-
-    @And("the event deck is setup to draw Q4 then Q3")
-    public void event_deck_draw_Q4_then_Q3(){
-        Deck eventDeck = new Deck();
-        QuestCard Q4 = new QuestCard("quest", "Q4", 4, 1);
-        QuestCard Q3 = new QuestCard("quest", "Q3", 3, 1);
-        eventDeck.addCard(Q4);
-        eventDeck.addCard(Q3);
-        game.setEventDeck(eventDeck);
-    }
-
-
-    @And("P1 builds the quest with the first stage having only a foe")
-    public void P1_builds_quest_with_first_stage_having_only_foe(){
-        List<String> inputs = List.of(
-                "3\n", //select single F15
-                "quit\n", //finish building stage
-                "3\n", //select F15
-                "3\n", //select dagger
-                "quit\n", //finish building stage 2
-                "1\n", //add a F5 to stage
-                "8\n", //add a lance to stage
-                "quit\n", //finish building stage 3
-                "1\n", //F5
-                "6\n", //battleaxe
-                "1\n", //sword
-                "quit\n" //finish building stage 4, 30
-        );
-
-        inputQueue.addAll(inputs);
-
-
-
-    }
-    @And("P1, P3, P4 participate, discard cards, build and resolve attacks for stage 1, P3 attack fails")
-    public void P1_P3_P4_participate_P3_fails_stage1(){
-
-        List<String> inputs = List.of(
-                "y\n", //player 2 decides to participate
-                "1\n",  //discard F5
-                "y\n", //player 3 decided to participate
-                "1\n", //player 3 discards F5
-                "y\n", //player 4 decides to participate
-                "1\n",  //player 4 discards F5
-                "6\n", //player 2 chooses a Dagger
-                "7\n", //player 2 chooses a Horse
-                "quit\n", //player 1 finishes attack, value 15
-                "4\n", //P3 chooses a Dagger
-                "quit\n", //P3 completes attack, it fails
-                "4\n", //P4 adds dagger
-                "6\n", //P4 adds horse
-                "quit\n" //P4 finishes attack
-        );
-        inputQueue.addAll(inputs);
-    }
-
-    @And("P2 and P4 participate in and win stages 2, 3, and 4")
-    public void P2_P4_participate_and_win_stages_2_3_4(){
-        List<String> inputs = List.of(
-                "y\n", //player 2 decides to participate
-                "y\n", //player 3 decided to participate
-                "7\n",
-                "7\n",
-                "quit\n",
-                "5\n",
-                "5\n",
-                "quit\n",
-                "y\n",
-                "y\n",
-                "7\n",
-                "8\n",
-                "quit\n",
-                "4\n",
-                "8\n",
-                "quit\n",
-                "y\n",
-                "y\n",
-                "9\n",
-                "quit\n",
-                "9\n",
-                "quit\n"
-        );
-
-        inputQueue.addAll(inputs);
-    }
-
-
-    @And("P3 sponsors the quest and builds the stages")
-    public void P3_sponsors_the_quest_and_builds_the_stages(){
-
-        List<String> inputs = List.of(
-                "y\n", //P3 accepts sponsor
-                "1\n", //Add F5
-                "quit\n",
-                "2\n", //F15
-                "quit\n",
-                "2\n", // sword
-                "5\n", //horse
-                "1\n", //F5
-                "quit\n"
-        );
-
-        inputQueue.addAll(inputs);
-
-    }
-
-    @And("P1 declines to participate")
-    public void P1_declines_to_participate(){
-        inputQueue.add("n\n");
-    }
-
-    @And("P2 and P4 participate in and win stages 1, 2, and 3")
-    public void P2_P4_participate_and_win_stages_1_2_3(){
-        List<String> inputs = List.of(
-                "y\n",
-                "y\n",
-                "7\n",
-                "quit\n",
-                "5\n",
-                "quit\n",
-                "y\n",
-                "y\n",
-                "7\n",
-                "quit\n",
-                "6\n",
-                "quit\n",
-                "y\n",
-                "y\n",
-                "9\n",
-                "quit\n",
-                "9\n",
-                "quit\n"
-        );
-
-        inputQueue.addAll(inputs);
-    }
-
-    @Then("P2 and P4 should each have 7 shields")
-    public void P2_P4_both_have_7_shields(){
-
-        assertEquals(7,game.P2.getShields());
-        assertEquals(7,game.P4.getShields());
-
-    }
-
-    @Then("P2 and P4 should be declared winners")
-    public void P2_P4_declared_winners(){
-        assertEquals(2, game.getWinners().size()); //ensure that the size of winners is two
-        assertTrue(game.getWinners().contains(game.P2)); //check that it contains P2
-        assertTrue(game.getWinners().contains(game.P4)); //check that it contains P4
-    }
-
-
-    /*
-    Scenario 4: 0_winner_quest
-     */
 
     @And("the event deck is setup to draw Q2")
     public void event_deck_draw_Q2(){
@@ -497,39 +567,6 @@ public class GameSteps {
         QuestCard Q2 = new QuestCard("quest", "Q2", 2, 3);
         eventDeck.addCard(Q2);
         game.setEventDeck(eventDeck);
-    }
-
-    @And("P1 builds the quest with 2 stages")
-    public void P1_build_quest_2_stages(){
-        List<String> inputs = List.of(
-                "3\n", //F15
-                "quit\n", //finish stage with value of 15
-                "3\n", //F15
-                "4\n", //sword
-                "quit\n" //finish stage with value of 25
-        );
-
-        inputQueue.addAll(inputs);
-    }
-
-    @And("P2, P3, P4 participate, discard cards, build and resolve attacks for stage 1, all attacks fail")
-    public void P2_P3_P4_participate_and_lose_stage_1(){
-        List<String> inputs = List.of(
-                "y\n", //P2 decides to participate
-                "1\n",  //discard F5
-                "y\n", //P3 decided to participate
-                "1\n", //player 3 discards F5
-                "y\n", //P4 decides to participate
-                "1\n",  //P4 discards F5
-                "6\n", //P2 chooses a dagger
-                "quit\n",
-                "4\n", //P3 chooses a dagger
-                "quit\n",
-                "4\n", //P4 chooses a dagger
-                "quit\n"
-        );
-
-        inputQueue.addAll(inputs);
     }
 
     @Then("the quest should end with no winner")
@@ -572,7 +609,95 @@ public class GameSteps {
 
     }
 
+    @And("{string} draws {string}")
+    public void eventCard_drawn(String playerID, String eventCard){
+        Player player = selectPlayer(playerID);
 
+        if(eventCard.equals("Prosperity")){
+            inputQueue.add("1\n");
+            inputQueue.add("1\n");
+            for (String playerId : simulatedHands.keySet()) {
+                ArrayList<AdventureCard> simulatedHand = simulatedHands.get(playerId);
+
+                simulatedHand.add((AdventureCard) simulatedDeck.getCards().removeFirst());
+                simulatedHand.add((AdventureCard) simulatedDeck.getCards().removeFirst());
+
+                Collections.sort(simulatedHand);
+
+                simulatedHands.put(playerId, simulatedHand);
+            }
+
+            simulatedHands.get("P1").removeFirst();
+            simulatedHands.get("P1").removeFirst();
+
+            InputStream inputStream = createInputStreamFromList(inputQueue);
+            System.setIn(inputStream);
+            inputQueue.clear();
+        }
+
+        if(eventCard.equals("Queen's Favor")){
+            inputQueue.add("1\n");
+
+            ArrayList<AdventureCard> simulatedHand = simulatedHands.get(playerID);
+            simulatedHand.add((AdventureCard) simulatedDeck.getCards().removeFirst());
+            simulatedHand.add((AdventureCard) simulatedDeck.getCards().removeFirst());
+
+            Collections.sort(simulatedHand);
+            simulatedHand.removeFirst();
+            simulatedHands.put(player.getID(), simulatedHand);
+
+
+
+            InputStream inputStream = createInputStreamFromList(inputQueue);
+            System.setIn(inputStream);
+            inputQueue.clear();
+
+        }
+
+        game.drawEventCard(player);
+        game.currentPlayerNum = (game.currentPlayerNum + 1) % game.players.length;
+
+    }
+
+
+
+
+    @Then("{string} determined as winner")
+    public void determined_as_winner(String playerID) {
+
+
+        ArrayList<String> winners = parseInputToList(playerID);
+
+        for(String winner: winners){
+            Player player = selectPlayer(winner);
+            assertTrue(game.getWinners().contains(player));
+        }
+    }
+
+
+
+
+
+    private Player selectPlayer(String playerID){
+        Player player;
+        switch (playerID) {
+            case "P1":
+                player = game.P1;
+                break;
+            case "P2":
+                player = game.P2;
+                break;
+            case "P3":
+                player = game.P3;
+                break;
+            case "P4":
+                player = game.P4;
+                break;
+            default: throw new IllegalArgumentException("Invalid player ID: " + playerID);
+        }
+
+        return player;
+    }
 
 
     private static InputStream createInputStreamFromList(List<String> inputs) {

@@ -17,6 +17,10 @@ public class EventCard extends Card {
         if(card.getName().equals("Queen's Favor")){
             game.drawAdventureCard(player);
             game.drawAdventureCard(player);
+            if(player.getHand().size() > 12){
+                game.trimHand(player);
+            }
+
         }
         if(card.getName().equals("Prosperity")){
             for(Player player1: game.players){
