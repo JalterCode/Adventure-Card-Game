@@ -304,8 +304,6 @@ public class GameSteps {
                 break;
             case "accepts":
                 inputQueue.add("y\n"); //Accepts
-                System.out.println(inputQueue);
-
         }
     }
 
@@ -439,11 +437,7 @@ public class GameSteps {
         Set<String> usedCards = new HashSet<>();
 
         ArrayList<AdventureCard> simulatedHand = simulatedHands.get(playerID);
-
-
-        System.out.println("CURRENT SIMULATED HAND: " + simulatedHand);
-
-
+        
         for(String card: listCards){
 
             for (int i = 0; i < simulatedHand.size(); i++) {
