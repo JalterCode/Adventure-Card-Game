@@ -3,14 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackjack Game</title>
+    <title>Adventure Game</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #game-output {
+            height: 400px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        #game-status {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f5f5f5;
+        }
+        .player-info {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h1>Welcome to Adventure</h1>
-    <button onclick="startGame()">Start Game</button>
-    <button onclick="drawCard()">Draw Card</button>
-    <div id="game-status"></div>
+    <h1>Adventure Game</h1>
+    <div id="game-status">
+        <h3>Player Status</h3>
+        <div class="player-info" id="p1-status"></div>
+        <div class="player-info" id="p2-status"></div>
+        <div class="player-info" id="p3-status"></div>
+        <div class="player-info" id="p4-status"></div>
+    </div>
+    <button id="start-button" onclick="startGame()">Start Game</button>  <!-- Added ID here -->
+    <button id="test-0-winner" onclick ="test0WinnerQuest()">Test: 0 Winner Quest</button>
+    <div id="game-output"></div>
+    <input type="text" id="userInput" onkeypress="handleKeyPress(event)">
+    <button id="send-button" onclick="sendInput()">Send</button>  <!-- Added ID here too -->
 </div>
 <script src="script.js"></script>
 </body>
