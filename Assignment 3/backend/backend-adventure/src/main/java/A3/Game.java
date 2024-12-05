@@ -72,7 +72,6 @@ public class Game {
         eventDeckSetup();
     }
 
-    // Update play() method
     public void play() {
         winners.clear();
         while (!finished) {
@@ -80,9 +79,8 @@ public class Game {
             if(playTurn()) {
                 if (questing) {
                     beginQuest(gameStages);
-                    output("QUESTING!!!!!!!!!!!!!!!!!!!!");
                     output(players[currentPlayerNum] + "'s turn has ended.");
-                    output("Press <return> to end and pass your turn.");
+                    output("Press send to end and pass your turn.");
 
                     getInput(); // Wait for enter key
 
@@ -91,9 +89,8 @@ public class Game {
                     finished = checkWinners();
                     if(finished) break;
                 } else {
-                    output("NOTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
                     output(players[currentPlayerNum] + "'s turn has ended.");
-                    output("Press <return> to end and pass your turn.");
+                    output("Press send to end and pass your turn.");
 
                     getInput(); // Wait for enter key
 
@@ -115,8 +112,8 @@ public class Game {
             }
         }
         if (!winners.isEmpty()) {
-            System.out.println("Winners: " + winners);
-            System.out.println("Now ending game...");
+            output("Winners: " + winners);
+            output("Now ending game...");
             return true;
         }
         return false;
@@ -139,7 +136,7 @@ public class Game {
         output(players[currentPlayerNum] + "'s turn has ended.");
         output("Press <return> to end and pass your turn.");
 
-        getInput(); // Wait for enter key press instead of using Scanner
+        getInput(); // substitue for scanner
 
         clearDisplay();
 
@@ -246,13 +243,16 @@ public class Game {
     public void sponsorQuest(Card card) {
         QuestCard questCard = (QuestCard) card;
         output("\nQuest card drawn: " + questCard);
-        boolean sponsored = false;  // Add this flag
+        boolean sponsored = false;
 
-        // Ask each player to sponsor
-        for (Player player : players) {
-            if (!sponsored && askToSponsorQuest(player)) {  // Check flag
+        int startingPlayer = currentPlayerNum;
+
+        for (int i = startingPlayer; i < startingPlayer + players.length; i++) {
+            Player player = players[i % players.length];
+
+            if (!sponsored && askToSponsorQuest(player)) {
                 sponsoringPlayer = player;
-                sponsored = true;  // Set flag
+                sponsored = true;
                 gameStages = buildQuest(player, questCard);
                 if (gameStages != null) {
                     questing = true;
@@ -264,6 +264,7 @@ public class Game {
         output("No one sponsored the quest.");
         questing = false;
     }
+
 
     public boolean askToSponsorQuest(Player player) {
         while (true) {  // Keep asking until valid input is received
@@ -281,7 +282,6 @@ public class Game {
     }
 
 
-    // Update askToParticipate
     public boolean askToParticipate(Player player) {
         boolean validInput = false;
         while (!validInput) {
@@ -428,7 +428,6 @@ public class Game {
         }
     }
 
-    // Update buildQuest
     public ArrayList<ArrayList<AdventureCard>> buildQuest(Player sponsorPlayer, QuestCard quest) {
         ArrayList<ArrayList<AdventureCard>> stages = initializeStages(quest.getStages());
 
@@ -481,11 +480,7 @@ public class Game {
         return stages;
     }
 
-    /**
-     *
-     *make this return arraylist so that the cards can all be removed in one shot later
-     */
-    // Update buildAttack
+
     public ArrayList<AdventureCard> buildAttack(Player player) {
         HashSet<String> usedWeapons = new HashSet<>();
         ArrayList<AdventureCard> attack = new ArrayList<>();
@@ -610,9 +605,6 @@ public class Game {
     }
 
 
-
-
-    // Update trimHand
     public int trimHand(Player player) {
         int n = player.getHand().size() - 12;
         output(player.getID() + ": ");
@@ -688,7 +680,6 @@ public class Game {
     public Player getSponsoringPlayer(){
         return sponsoringPlayer;
     }
-    // for testing purposes
     public Player setSponsoringPlayer(Player sponsoringPlayer){
         return this.sponsoringPlayer = sponsoringPlayer;
     }

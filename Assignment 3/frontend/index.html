@@ -42,11 +42,23 @@
         <div class="player-info" id="p3-status"></div>
         <div class="player-info" id="p4-status"></div>
     </div>
-    <button id="start-button" onclick="startGame()">Start Game</button>  <!-- Added ID here -->
-    <button id="test-0-winner" onclick ="test0WinnerQuest()">Test: 0 Winner Quest</button>
+    <button id="show-hands-button" onclick="showCurrentHands()">Show Current Hands</button>
+    <div id="current-hands">
+        <h3>Current Hands</h3>
+        <div class="player-info" id="p1-hand"></div>
+        <div class="player-info" id="p2-hand"></div>
+        <div class="player-info" id="p3-hand"></div>
+        <div class="player-info" id="p4-hand"></div>
+    </div>
+    <button id="start-button" onclick="startGame()">Start Game</button>
+    <button id="test-0-winner" onclick="test0WinnerQuest()">Test: 0 Winner Quest</button>
+    <button id="test-A1-scenario" onclick="testA1Scenario()">Test: A1 Scenario</button>
+    <button id="test-2winner_game_2winner_quest" onclick="test2winner_game_2winner_quest()">Test: 2 Winner Game, 2 Winner Quest</button>
+    <button id="test-1winner_game_with_events" onclick="test1winner_game_with_events()">Test: 1 Winner Game with Events</button>
+
     <div id="game-output"></div>
     <input type="text" id="userInput" onkeypress="handleKeyPress(event)">
-    <button id="send-button" onclick="sendInput()">Send</button>  <!-- Added ID here too -->
+    <button id="send-button" onclick="sendInput()">Send</button>
 </div>
 <script src="script.js"></script>
 </body>
